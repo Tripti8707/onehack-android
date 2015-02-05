@@ -13,7 +13,7 @@ public class AuthenticationTask extends AsyncTask<Void, Void, String> {
 
   private final Context mContext;
   protected final String mEmail;
-  protected final String mPassword;
+  private final String mPassword;
 
   public AuthenticationTask(Context context, final String email, final String password) {
     mContext = context;

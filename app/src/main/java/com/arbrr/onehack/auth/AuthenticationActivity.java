@@ -64,7 +64,7 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
           Toast.makeText(AuthenticationActivity.this, R.string.error_log_in, Toast.LENGTH_SHORT).show();
           return;
         }
-        finishAuthentication(mEmail, mPassword, token);
+        finishAuthentication(mEmail, token);
       }
     }.execute();
   }
@@ -82,7 +82,7 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
     return result;
   }
 
-  private void finishAuthentication(String email, String password, String token) {
+  private void finishAuthentication(String email, String token) {
     final AccountManager accountManager = AccountManager.get(this);
     final Account account = new Account(email, mAccountType);
     accountManager.addAccountExplicitly(account, null, null);
