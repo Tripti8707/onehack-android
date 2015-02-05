@@ -1,3 +1,11 @@
 <resources>
   <string name="app_name">OneHack</string>
+  <string name="email">Email</string>
+  <string name="password">Password</string>
+  <string name="log_in">Log In</string>
+  <string name="error_invalid_email">Please enter a valid email address</string>
+  <string name="error_invalid_password">Please enter a valid password</string>
+  <string name="logging_in">Logging in...</string>
+  <string name="error_log_in">Log in failed. Please try again.</string>
+  <string name="api_account_type">com.arbrr.onehack.api</string>
 </resources>
