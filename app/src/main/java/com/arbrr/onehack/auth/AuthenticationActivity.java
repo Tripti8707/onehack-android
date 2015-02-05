@@ -85,7 +85,7 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
   private void finishAuthentication(String email, String password, String token) {
     final AccountManager accountManager = AccountManager.get(this);
     final Account account = new Account(email, mAccountType);
-    accountManager.addAccountExplicitly(account, password, null);
+    accountManager.addAccountExplicitly(account, null, null);
     accountManager.setAuthToken(account, mTokenType, token);
 
     final Intent intent = new Intent();
