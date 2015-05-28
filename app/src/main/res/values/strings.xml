@@ -8,4 +8,8 @@
   <string name="logging_in">Logging in...</string>
   <string name="error_log_in">Log in failed. Please try again.</string>
   <string name="api_account_type">com.arbrr.onehack.api</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
 </resources>
