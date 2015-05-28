@@ -1,18 +1,35 @@
 package com.arbrr.onehack.ui;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.arbrr.onehack.R;
+import com.arbrr.onehack.ui.announcements.AnnouncementsFragment;
+import com.arbrr.onehack.ui.events.EventsFragment;
+import com.arbrr.onehack.ui.guide.GuideFragment;
 
 public class MainActivity extends ActionBarActivity {
+
+    private AnnouncementsFragment announcementsFragment;
+    private EventsFragment eventsFragment;
+    private GuideFragment guideFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Instantiate fragments
+        announcementsFragment = new AnnouncementsFragment();
+        eventsFragment = new EventsFragment();
+        guideFragment = new GuideFragment();
+
+        // Inflate AnnouncementsFragment
+        setDefaultFragment();
     }
 
     @Override
@@ -35,5 +52,16 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Sets the default view to a AnnouncementsFragment. (may be changed later)
+     */
+    private void setDefaultFragment() {
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.main_fragment_container, announcementsFragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 }
