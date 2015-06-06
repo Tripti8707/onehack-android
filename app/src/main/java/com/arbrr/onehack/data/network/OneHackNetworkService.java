@@ -1,11 +1,13 @@
 package com.arbrr.onehack.data.network;
 
+import android.graphics.AvoidXfermode;
+
 import com.arbrr.onehack.data.model.Announcement;
-import com.arbrr.onehack.data.model.ApiToken;
 import com.arbrr.onehack.data.model.Event;
 import com.arbrr.onehack.data.model.Hackathon;
 import com.arbrr.onehack.data.model.HackerRole;
 import com.arbrr.onehack.data.model.Location;
+import com.arbrr.onehack.data.model.ModelObject;
 import com.arbrr.onehack.data.model.User;
 
 import java.util.List;
@@ -14,6 +16,8 @@ import retrofit.Callback;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
+import retrofit.http.HEAD;
+import retrofit.http.Header;
 import retrofit.http.POST;
 import retrofit.http.PUT;
 import retrofit.http.Path;
@@ -21,15 +25,15 @@ import retrofit.http.Path;
 /**
  * Created by boztalay on 6/3/15.
  */
-public interface OneHackService {
+public interface OneHackNetworkService {
     @GET("/users/me")
-    void getCurrentUser(Callback<User> callback);
+    void getCurrentUser(@Header("Authorization") String token, Callback<User> callback);
 
     @POST("/users/")
-    void signUserUp(@Body User user, Callback<ApiToken> callback);
+    void signUserUp(@Body User user, Callback<ModelObject> callback);
 
     @POST("/sessions")
-    void logUserIn(@Body LoginParams loginParams, Callback<ApiToken> callback);
+    void logUserIn(@Body LoginParams loginParams, Callback<ModelObject> callback);
 
     @DELETE("/sessions")
     void logUserOut(Callback<GenericResponse> callback);
