@@ -1,7 +1,6 @@
 package com.arbrr.onehack.ui.announcements;
 
 import android.app.Fragment;
-import android.graphics.AvoidXfermode;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,18 +8,19 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.arbrr.onehack.R;
-import com.arbrr.onehack.data.model.ModelObject;
+import com.arbrr.onehack.data.model.Announcement;
+import com.arbrr.onehack.data.model.Hackathon;
 import com.arbrr.onehack.data.model.User;
-import com.arbrr.onehack.data.network.LoginParams;
 import com.arbrr.onehack.data.network.NetworkManager;
 import com.arbrr.onehack.data.network.OneHackCallback;
 
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import java.util.Date;
+import java.util.List;
 
 public class AnnouncementsFragment extends Fragment {
     private static final String tag = "ONEHACK-AF";
+
+    private NetworkManager networkManager;
 
     public AnnouncementsFragment() {
         // Required empty public constructor.
@@ -38,11 +38,12 @@ public class AnnouncementsFragment extends Fragment {
 
         // Instantiate any views in this layout here.
 
-        NetworkManager networkManager = new NetworkManager();
-        networkManager.logUserIn("tom_erdmann@mac.com", "test", new OneHackCallback<User>() {
+        networkManager = new NetworkManager();
+        networkManager.logUserIn("boztalay@gmail.com", "testy", new OneHackCallback<User>() {
             @Override
             public void success(User response) {
                 Log.d(tag, "Logged in!");
+                getOtherData();
             }
 
             @Override
@@ -52,5 +53,27 @@ public class AnnouncementsFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private void getOtherData() {
+        Hackathon hackathon = new Hackathon();
+        hackathon.name = "BozHacks";
+        hackathon.info = "The most boztalay hackathon";
+        hackathon.hexColor = "FF0000";
+        hackathon.logoUrl = "what logo";
+        hackathon.startTime = new Date();
+        hackathon.endTime = new Date();
+
+        networkManager.createHackathon(hackathon, new OneHackCallback<Hackathon>() {
+            @Override
+            public void success(Hackathon response) {
+                Log.d(tag, "Hey there's a new hackathon in town");
+            }
+
+            @Override
+            public void failure(Throwable error) {
+                Log.d(tag, "Couldn't create the new hackathon :(");
+            }
+        });
     }
 }
