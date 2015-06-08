@@ -39,13 +39,13 @@ public interface OneHackNetworkService {
     void logUserOut(Callback<GenericResponse> callback);
 
     @GET("/hackathons")
-    void getHackathons(Callback<List<Hackathon>> callback);
+    void getHackathons(@Header("Authorization") String token, Callback<List<Hackathon>> callback);
 
     @GET("/hackathons/{hackathon_id}")
-    void getHackathon(@Path("hackathon_id") int hackathon_id, Callback<Hackathon> callback);
+    void getHackathon(@Header("Authorization") String token, @Path("hackathon_id") int hackathon_id, Callback<Hackathon> callback);
 
     @POST("/hackathons")
-    void createHackathon(@Body Hackathon hackathon, Callback<Hackathon> callback);
+    void createHackathon(@Header("Authorization") String token, @Body Hackathon hackathon, Callback<Hackathon> callback);
 
     @GET("/hackathons/{hackathon_id}/announcements")
     void getAnnouncements(@Path("hackathon_id") int hackathon_id, Callback<List<Announcement>> callback);
