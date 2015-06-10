@@ -54,10 +54,10 @@ public interface OneHackNetworkService {
     void getAnnouncement(@Path("hackathon_id") int hackathon_id, @Path("announcement_id") int announcement_id, Callback<Announcement> callback);
 
     @POST("/hackathons/{hackathon_id}/announcements")
-    void createAnnouncement(@Path("hackathon_id") int hackathon_id, @Body Announcement announcement, Callback<Announcement> callback);
+    void createAnnouncement(@Header("Authorization") String token, @Path("hackathon_id") int hackathon_id, @Body Announcement announcement, Callback<Announcement> callback);
 
     @DELETE("/hackathons/{hackathon_id}/announcements/{announcement_id}")
-    void deleteAnnouncement(@Path("hackathon_id") int hackathon_id, @Path("announcement_id") int announcement_id, Callback<GenericResponse> callback);
+    void deleteAnnouncement(@Header("Authorization") String token, @Path("hackathon_id") int hackathon_id, @Path("announcement_id") int announcement_id, Callback<GenericResponse> callback);
 
     @GET("/hackathons/{hackathon_id}/events")
     void getEvents(@Path("hackathon_id") int hackathon_id, Callback<List<Event>> callback);
@@ -66,13 +66,13 @@ public interface OneHackNetworkService {
     void getEvent(@Path("hackathon_id") int hackathon_id, @Path("event_id") int event_id, Callback<Event> callback);
 
     @POST("/hackathons/{hackathon_id}/events")
-    void createEvent(@Path("hackathon_id") int hackathon_id, @Body Event event, Callback<Event> callback);
+    void createEvent(@Header("Authorization") String token, @Path("hackathon_id") int hackathon_id, @Body Event event, Callback<Event> callback);
 
-    @PUT("/hackathons/{hackathon_id}/events")
-    void updateEvent(@Path("hackathon_id") int hackathon_id, @Body Event event, Callback<Event> callback);
+    @PUT("/hackathons/{hackathon_id}/events/{event_id}")
+    void updateEvent(@Header("Authorization") String token, @Path("hackathon_id") int hackathon_id, @Path("event_id") int event_id, @Body Event event, Callback<Event> callback);
 
     @DELETE("/hackathons/{hackathon_id}/events/{event_id}")
-    void deleteEvent(@Path("hackathon_id") int hackathon_id, @Path("event_id") int event_id, Callback<GenericResponse> callback);
+    void deleteEvent(@Header("Authorization") String token, @Path("hackathon_id") int hackathon_id, @Path("event_id") int event_id, Callback<GenericResponse> callback);
 
     @GET("/hackathons/{hackathon_id}/locations")
     void getLocations(@Path("hackathon_id") int hackathon_id, Callback<List<Location>> callback);
