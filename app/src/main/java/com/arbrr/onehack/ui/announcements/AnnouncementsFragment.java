@@ -9,8 +9,10 @@ import android.view.ViewGroup;
 
 import com.arbrr.onehack.R;
 import com.arbrr.onehack.data.model.Announcement;
+import com.arbrr.onehack.data.model.Event;
 import com.arbrr.onehack.data.model.Hackathon;
 import com.arbrr.onehack.data.model.User;
+import com.arbrr.onehack.data.network.GenericResponse;
 import com.arbrr.onehack.data.network.NetworkManager;
 import com.arbrr.onehack.data.network.OneHackCallback;
 
@@ -39,7 +41,7 @@ public class AnnouncementsFragment extends Fragment {
         // Instantiate any views in this layout here.
 
         networkManager = new NetworkManager();
-        networkManager.logUserIn("boztalay@gmail.com", "testy", new OneHackCallback<User>() {
+        networkManager.logUserIn("tom_erdmann@mac.com", "test", new OneHackCallback<User>() {
             @Override
             public void success(User response) {
                 Log.d(tag, "Logged in!");
@@ -56,23 +58,15 @@ public class AnnouncementsFragment extends Fragment {
     }
 
     private void getOtherData() {
-        Hackathon hackathon = new Hackathon();
-        hackathon.name = "BozHacks";
-        hackathon.info = "The most boztalay hackathon";
-        hackathon.hexColor = "FF0000";
-        hackathon.logoUrl = "what logo";
-        hackathon.startTime = new Date();
-        hackathon.endTime = new Date();
-
-        networkManager.createHackathon(hackathon, new OneHackCallback<Hackathon>() {
+        networkManager.deleteEvent(1, 12, new OneHackCallback<GenericResponse>() {
             @Override
-            public void success(Hackathon response) {
-                Log.d(tag, "Hey there's a new hackathon in town");
+            public void success(GenericResponse response) {
+
             }
 
             @Override
             public void failure(Throwable error) {
-                Log.d(tag, "Couldn't create the new hackathon :(");
+
             }
         });
     }
