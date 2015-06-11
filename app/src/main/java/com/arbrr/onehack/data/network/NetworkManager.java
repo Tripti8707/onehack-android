@@ -204,8 +204,8 @@ public class NetworkManager {
         });
     }
 
-    public void getAnnouncement(int hackathonId, int announcementId, final OneHackCallback<Announcement> callback) {
-        networkSerivce.getAnnouncement(hackathonId, announcementId, new Callback<Announcement>() {
+    public void getAnnouncement(int announcementId, final OneHackCallback<Announcement> callback) {
+        networkSerivce.getAnnouncement(currentHackathonId, announcementId, new Callback<Announcement>() {
             @Override
             public void success(Announcement announcement, Response response) {
                 Log.d(tag, "Successfully got the announcement");
@@ -220,8 +220,8 @@ public class NetworkManager {
         });
     }
 
-    public void createAnnouncement(int hackathonId, Announcement announcement, final OneHackCallback<Announcement> callback) {
-        networkSerivce.createAnnouncement(apiToken, hackathonId, announcement, new Callback<Announcement>() {
+    public void createAnnouncement(Announcement announcement, final OneHackCallback<Announcement> callback) {
+        networkSerivce.createAnnouncement(apiToken, currentHackathonId, announcement, new Callback<Announcement>() {
             @Override
             public void success(Announcement announcement, Response response) {
                 Log.d(tag, "Succcessfully created the announcement");
@@ -236,8 +236,8 @@ public class NetworkManager {
         });
     }
 
-    public void deleteAnnouncement(int hackathonId, int announcementId, final OneHackCallback<GenericResponse> callback) {
-        networkSerivce.deleteAnnouncement(apiToken, hackathonId, announcementId, new Callback<GenericResponse>() {
+    public void deleteAnnouncement(Announcement announcement, final OneHackCallback<GenericResponse> callback) {
+        networkSerivce.deleteAnnouncement(apiToken, currentHackathonId, announcement.id, new Callback<GenericResponse>() {
             @Override
             public void success(GenericResponse genericResponse, Response response) {
                 Log.d(tag, "Successfully deleted the announcement");
@@ -252,8 +252,8 @@ public class NetworkManager {
         });
     }
 
-    public void getEvents(int hackathonId, final OneHackCallback<List<Event>> callback) {
-        networkSerivce.getEvents(hackathonId, new Callback<List<Event>>() {
+    public void getEvents(final OneHackCallback<List<Event>> callback) {
+        networkSerivce.getEvents(currentHackathonId, new Callback<List<Event>>() {
             @Override
             public void success(List<Event> events, Response response) {
                 Log.d(tag, "Successfully got " + events.size() + " events");
@@ -268,8 +268,8 @@ public class NetworkManager {
         });
     }
 
-    public void getEvent(int hackathonId, int eventId, final OneHackCallback<Event> callback) {
-        networkSerivce.getEvent(hackathonId, eventId, new Callback<Event>() {
+    public void getEvent(int eventId, final OneHackCallback<Event> callback) {
+        networkSerivce.getEvent(currentHackathonId, eventId, new Callback<Event>() {
             @Override
             public void success(Event event, Response response) {
                 Log.d(tag, "Successfully got the event");
@@ -284,8 +284,8 @@ public class NetworkManager {
         });
     }
 
-    public void createEvent(int hackathonId, Event event, final OneHackCallback<Event> callback) {
-        networkSerivce.createEvent(apiToken, hackathonId, event, new Callback<Event>() {
+    public void createEvent(Event event, final OneHackCallback<Event> callback) {
+        networkSerivce.createEvent(apiToken, currentHackathonId, event, new Callback<Event>() {
             @Override
             public void success(Event event, Response response) {
                 Log.d(tag, "Successfully created the event");
@@ -300,8 +300,8 @@ public class NetworkManager {
         });
     }
 
-    public void updateEvent(int hackathonId, Event event, final OneHackCallback<Event> callback) {
-        networkSerivce.updateEvent(apiToken, hackathonId, event.id, event, new Callback<Event>() {
+    public void updateEvent(Event event, final OneHackCallback<Event> callback) {
+        networkSerivce.updateEvent(apiToken, currentHackathonId, event.id, event, new Callback<Event>() {
             @Override
             public void success(Event event, Response response) {
                 Log.d(tag, "Successfully updated the event");
@@ -316,8 +316,8 @@ public class NetworkManager {
         });
     }
 
-    public void deleteEvent(int hackathonId, int eventId, final OneHackCallback<GenericResponse> callback) {
-        networkSerivce.deleteEvent(apiToken, hackathonId, eventId, new Callback<GenericResponse>() {
+    public void deleteEvent(Event event, final OneHackCallback<GenericResponse> callback) {
+        networkSerivce.deleteEvent(apiToken, currentHackathonId, event.id, new Callback<GenericResponse>() {
             @Override
             public void success(GenericResponse genericResponse, Response response) {
                 Log.d(tag, "Successfully deleted the event");
@@ -332,8 +332,8 @@ public class NetworkManager {
         });
     }
 
-    public void getLocations(int hackathonId, final OneHackCallback<List<Location>> callback) {
-        networkSerivce.getLocations(hackathonId, new Callback<List<Location>>() {
+    public void getLocations(final OneHackCallback<List<Location>> callback) {
+        networkSerivce.getLocations(currentHackathonId, new Callback<List<Location>>() {
             @Override
             public void success(List<Location> locations, Response response) {
                 Log.d(tag, "Successfully got " + locations.size() + " locations");
@@ -348,8 +348,8 @@ public class NetworkManager {
         });
     }
 
-    public void createLocation(int hackathonId, Location location, final OneHackCallback<Location> callback) {
-        networkSerivce.createLocation(apiToken, hackathonId, location, new Callback<Location>() {
+    public void createLocation(Location location, final OneHackCallback<Location> callback) {
+        networkSerivce.createLocation(apiToken, currentHackathonId, location, new Callback<Location>() {
             @Override
             public void success(Location location, Response response) {
                 Log.d(tag, "Successfully created the location");
@@ -364,8 +364,8 @@ public class NetworkManager {
         });
     }
 
-    public void getContacts(int hackathonId, final OneHackCallback<List<User>> callback) {
-        networkSerivce.getContacts(apiToken, hackathonId, new Callback<List<User>>() {
+    public void getContacts(final OneHackCallback<List<User>> callback) {
+        networkSerivce.getContacts(apiToken, currentHackathonId, new Callback<List<User>>() {
             @Override
             public void success(List<User> users, Response response) {
                 Log.d(tag, "Successfully got " + users.size() + " contacts");
