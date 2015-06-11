@@ -8,10 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.arbrr.onehack.R;
-import com.arbrr.onehack.data.model.Announcement;
-import com.arbrr.onehack.data.model.Event;
-import com.arbrr.onehack.data.model.Hackathon;
-import com.arbrr.onehack.data.model.User;
+import com.arbrr.onehack.data.model.*;
 import com.arbrr.onehack.data.network.GenericResponse;
 import com.arbrr.onehack.data.network.NetworkManager;
 import com.arbrr.onehack.data.network.OneHackCallback;
@@ -41,7 +38,7 @@ public class AnnouncementsFragment extends Fragment {
         // Instantiate any views in this layout here.
 
         networkManager = new NetworkManager();
-        networkManager.logUserIn("tom_erdmann@mac.com", "test", new OneHackCallback<User>() {
+        networkManager.logUserIn("admin@admin.com", "admin", new OneHackCallback<User>() {
             @Override
             public void success(User response) {
                 Log.d(tag, "Logged in!");
@@ -58,9 +55,15 @@ public class AnnouncementsFragment extends Fragment {
     }
 
     private void getOtherData() {
-        networkManager.deleteEvent(1, 12, new OneHackCallback<GenericResponse>() {
+        HackerRole hackerRole = new HackerRole();
+        hackerRole.id = 5;
+        hackerRole.hackathon_id = 1;
+        hackerRole.user_id = 7;
+        hackerRole.role = 1;
+
+        networkManager.updateHackerRole(hackerRole, new OneHackCallback<HackerRole>() {
             @Override
-            public void success(GenericResponse response) {
+            public void success(HackerRole response) {
 
             }
 

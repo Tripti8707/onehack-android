@@ -332,6 +332,86 @@ public class NetworkManager {
         });
     }
 
+    public void getLocations(int hackathonId, final OneHackCallback<List<Location>> callback) {
+        networkSerivce.getLocations(hackathonId, new Callback<List<Location>>() {
+            @Override
+            public void success(List<Location> locations, Response response) {
+                Log.d(tag, "Successfully got " + locations.size() + " locations");
+                callback.success(locations);
+            }
+
+            @Override
+            public void failure(RetrofitError retrofitError) {
+                Log.d(tag, "Couldn't get the locations");
+                callback.failure(retrofitError);
+            }
+        });
+    }
+
+    public void createLocation(int hackathonId, Location location, final OneHackCallback<Location> callback) {
+        networkSerivce.createLocation(apiToken, hackathonId, location, new Callback<Location>() {
+            @Override
+            public void success(Location location, Response response) {
+                Log.d(tag, "Successfully created the location");
+                callback.success(location);
+            }
+
+            @Override
+            public void failure(RetrofitError retrofitError) {
+                Log.d(tag, "Couldn't create the location");
+                callback.failure(retrofitError);
+            }
+        });
+    }
+
+    public void getContacts(int hackathonId, final OneHackCallback<List<User>> callback) {
+        networkSerivce.getContacts(apiToken, hackathonId, new Callback<List<User>>() {
+            @Override
+            public void success(List<User> users, Response response) {
+                Log.d(tag, "Successfully got " + users.size() + " contacts");
+                callback.success(users);
+            }
+
+            @Override
+            public void failure(RetrofitError retrofitError) {
+                Log.d(tag, "Couldn't get the contacts");
+                callback.failure(retrofitError);
+            }
+        });
+    }
+
+    public void createHackerRole(HackerRole hackerRole, final OneHackCallback<HackerRole> callback) {
+        networkSerivce.createHackerRole(apiToken, hackerRole, new Callback<HackerRole>() {
+            @Override
+            public void success(HackerRole hackerRole, Response response) {
+                Log.d(tag, "Successfully created the hacker role");
+                callback.success(hackerRole);
+            }
+
+            @Override
+            public void failure(RetrofitError retrofitError) {
+                Log.d(tag, "Couldn't create the hacker role");
+                callback.failure(retrofitError);
+            }
+        });
+    }
+
+    public void updateHackerRole(HackerRole hackerRole, final OneHackCallback<HackerRole> callback) {
+        networkSerivce.updateHackerRole(apiToken, hackerRole.id, hackerRole, new Callback<HackerRole>() {
+            @Override
+            public void success(HackerRole hackerRole, Response response) {
+                Log.d(tag, "Successfully updated the hacker role");
+                callback.success(hackerRole);
+            }
+
+            @Override
+            public void failure(RetrofitError retrofitError) {
+                Log.d(tag, "Couldn't update the hacker role");
+                callback.failure(retrofitError);
+            }
+        });
+    }
+
     //----- Helpers
 
     public void setCurrentHackathonId(int hackathonId) {
