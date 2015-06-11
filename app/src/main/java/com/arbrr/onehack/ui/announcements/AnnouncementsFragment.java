@@ -37,7 +37,7 @@ public class AnnouncementsFragment extends Fragment {
 
         // Instantiate any views in this layout here.
 
-        networkManager = new NetworkManager();
+        networkManager = NetworkManager.getInstance();
         networkManager.logUserIn("admin@admin.com", "admin", new OneHackCallback<User>() {
             @Override
             public void success(User response) {
@@ -55,21 +55,15 @@ public class AnnouncementsFragment extends Fragment {
     }
 
     private void getOtherData() {
-        HackerRole hackerRole = new HackerRole();
-        hackerRole.id = 5;
-        hackerRole.hackathon_id = 1;
-        hackerRole.user_id = 7;
-        hackerRole.role = 1;
-
-        networkManager.updateHackerRole(hackerRole, new OneHackCallback<HackerRole>() {
+        networkManager.getAnnouncements(new OneHackCallback<List<Announcement>>() {
             @Override
-            public void success(HackerRole response) {
-
+            public void success(List<Announcement> announcements) {
+                Log.d(tag, "Got " + announcements.size() + " announcements");
             }
 
             @Override
             public void failure(Throwable error) {
-
+                Log.d(tag, ":(");
             }
         });
     }

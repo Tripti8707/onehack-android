@@ -31,7 +31,7 @@ public class NetworkManager {
 
     private static NetworkManager instance;
 
-    public NetworkManager getInstance() {
+    public static NetworkManager getInstance() {
         if(instance == null) {
             instance = new NetworkManager();
         }
