@@ -78,14 +78,14 @@ public interface OneHackNetworkService {
     void getLocations(@Path("hackathon_id") int hackathon_id, Callback<List<Location>> callback);
 
     @POST("/hackathons/{hackathon_id}/locations")
-    void createLocation(@Path("hackathon_id") int hackathon_id, @Body Location location, Callback<Location> callback);
+    void createLocation(@Header("Authorization") String token, @Path("hackathon_id") int hackathon_id, @Body Location location, Callback<Location> callback);
 
     @GET("/hackathons/{hackathon_id}/contacts")
-    void getContacts(@Path("hackathon_id") int hackathon_id, Callback<List<User>> callback);
+    void getContacts(@Header("Authorization") String token, @Path("hackathon_id") int hackathon_id, Callback<List<User>> callback);
 
     @POST("/hacker_roles")
-    void createHackerRole(@Body HackerRole hackerRole, Callback<HackerRole> callback);
+    void createHackerRole(@Header("Authorization") String token, @Body HackerRole hackerRole, Callback<HackerRole> callback);
 
     @PUT("/hacker_roles/{hacker_role_id}")
-    void updateHackerRole(@Path("hacker_role_id") int hacker_role_id, @Body HackerRole hackerRole, Callback<HackerRole> callback);
+    void updateHackerRole(@Header("Authorization") String token, @Path("hacker_role_id") int hacker_role_id, @Body HackerRole hackerRole, Callback<HackerRole> callback);
 }
