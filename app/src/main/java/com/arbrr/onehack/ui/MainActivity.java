@@ -13,6 +13,9 @@ import com.arbrr.onehack.ui.announcements.AnnouncementsFragment;
 import com.arbrr.onehack.ui.events.EventsFragment;
 import com.arbrr.onehack.ui.guide.GuideFragment;
 
+/**
+ * Created by Omkar Moghe on 5/27/15
+ */
 public class MainActivity extends ActionBarActivity {
 
     private AnnouncementsFragment announcementsFragment;

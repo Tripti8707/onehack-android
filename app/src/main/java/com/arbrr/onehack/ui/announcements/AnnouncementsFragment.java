@@ -8,6 +8,9 @@ import android.view.ViewGroup;
 
 import com.arbrr.onehack.R;
 
+/**
+ * Created by Omkar Moghe on 5/27/15
+ */
 public class AnnouncementsFragment extends Fragment {
 
     public AnnouncementsFragment() {
