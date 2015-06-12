@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.arbrr.onehack.R;
+import com.arbrr.onehack.ui.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,9 +46,12 @@ public class AnnouncementsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_announcements, container, false);
-        getActivity().setTitle(R.string.announcements); //set ActionBar title
+        //getActivity().setTitle(R.string.announcements_title); //set ActionBar title
+        ((MainActivity)getActivity()).getSupportActionBar().setTitle(R.string.announcements_title);
+        ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        ((MainActivity)getActivity()).getSupportActionBar().setHomeButtonEnabled(false);
 
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recylcer_view);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.announcement_rv);
 
         // use this setting to improve performance if changes in content do not change layout size
         mRecyclerView.setHasFixedSize(true);
@@ -58,17 +62,18 @@ public class AnnouncementsFragment extends Fragment {
 
         //instantiate some dummy announcements
         announcementList = new ArrayList<Announcement>();
-        Announcement a1 = new Announcement("Hello World", "What an overused CS phrase", "5/21/13");
-        Announcement a2 = new Announcement("Long Announcement", "Reallly long message text. " +
-                "See what happens " + "when you use really long string. Is this good?", "1/10/10");
-        Announcement a3 = new Announcement("The Future", "The future is scaryyy", "10/10/2019");
+        Announcement a1 = new Announcement("Congratulations from Microsoft", "Awesome job at MHacks! Get free software and training" +
+                "from Microsoft. Learn more at http://aka.ms/mhacksresources", "1/16/2015");
+        Announcement a2 = new Announcement("Welcome to MHacks", "Welcome to MHacks VI!! We are very excited for you to " +
+                "begin hacking away. Stay tuned for notifications.", "1/15/20115");
+        Announcement a3 = new Announcement("Google", "This is a hyperlink (click me!): https://www.google.com", "6/10/2019");
 
         announcementList.add(a1);
         announcementList.add(a2);
         announcementList.add(a3);
 
         for(int i = 0; i < 15; ++i){
-            Announcement a = new Announcement("Long Announcement " + i, "This is annoucement #" + i, "1/10/10");
+            Announcement a = new Announcement("Random Announcement " + i, "This is random annoucement #" + i, "1/10/10");
             announcementList.add(a);
         }
 
@@ -76,7 +81,7 @@ public class AnnouncementsFragment extends Fragment {
         mAdapter = new MyAdapter(announcementList);
         mRecyclerView.setAdapter(mAdapter);
 
-        setHasOptionsMenu(true); //allows for modification of action bar
+        setHasOptionsMenu(true); //programatically create action bar
 
         return view;
     }
@@ -138,7 +143,7 @@ public class AnnouncementsFragment extends Fragment {
                 if(!isSlided){
                     //slide over the announcement to reveal a delete button
                     TranslateAnimation slideOver = new TranslateAnimation(0, -deleteView.getWidth(), 0, 0);
-                    slideOver.setDuration(1000);
+                    slideOver.setDuration(800);
                     slideOver.setFillAfter(true);
                     slideOver.setAnimationListener(this);
                     cv.startAnimation(slideOver);
@@ -147,7 +152,7 @@ public class AnnouncementsFragment extends Fragment {
                     if(v.getId() == R.id.announcement_card) {
                         //slide back the announcement covering up the delete button
                         TranslateAnimation slideOver = new TranslateAnimation(0, deleteView.getWidth(), 0, 0);
-                        slideOver.setDuration(1000);
+                        slideOver.setDuration(800);
                         slideOver.setFillAfter(true);
                         slideOver.setAnimationListener(this);
                         cv.startAnimation(slideOver);
@@ -155,7 +160,7 @@ public class AnnouncementsFragment extends Fragment {
                     if(v.getId() == R.id.announcement_delete){
                         //delete the announcement
                         announcementList.remove(this.getAdapterPosition());
-                        mAdapter.notifyDataSetChanged();
+                        mAdapter.notifyDataSetChanged(); //refresh recyler view
                         Toast.makeText(context, "Delete Announcement!", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -219,7 +224,7 @@ public class AnnouncementsFragment extends Fragment {
             holder.dateView.setText(announcements.get(i).getDate());
             holder.titleView.setTextColor(Color.BLACK);
             holder.messageView.setTextColor(Color.GRAY);
-            holder.dateView.setTextColor(Color.YELLOW);
+            holder.dateView.setTextColor(Color.GRAY);
         }
 
         // Return the size of your dataset (invoked by the layout manager)

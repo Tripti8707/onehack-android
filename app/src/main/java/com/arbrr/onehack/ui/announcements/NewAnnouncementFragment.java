@@ -1,7 +1,10 @@
 package com.arbrr.onehack.ui.announcements;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
@@ -11,9 +14,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.arbrr.onehack.R;
+import com.arbrr.onehack.ui.MainActivity;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by Nilay on 6/2/15.
@@ -23,9 +33,12 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
     private final static int SELECT_PICTURE_REQUEST = 1;
     private final static int CAMERA_REQUEST = 2;
 
+    private EditText titleField;
+    private EditText bodyField;
     private Button addPictureButton;
     private Button takePictureButton;
     private Button choosePhotoButton;
+    private ImageView imageView;
 
     public NewAnnouncementFragment() {
         // Required empty public constructor.
@@ -41,7 +54,13 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_new_announcement, container, false);
-        getActivity().setTitle(R.string.title_activity_main); //set ActionBar title
+        //getActivity().setTitle(R.string.title_activity_main); //set ActionBar title
+        ((MainActivity)getActivity()).getSupportActionBar().setTitle(R.string.new_announcement_title);
+        ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((MainActivity)getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
+
+        titleField = (EditText) view.findViewById(R.id.new_title);
+        bodyField = (EditText) view.findViewById(R.id.new_body);
 
         addPictureButton = (Button) view.findViewById(R.id.add_picture_button);
         addPictureButton.setOnClickListener(this);
@@ -51,6 +70,7 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
         choosePhotoButton = (Button) view.findViewById(R.id.choose_photo_button);
         choosePhotoButton.setOnClickListener(this);
         choosePhotoButton.setVisibility(View.GONE);
+        imageView = (ImageView) view.findViewById(R.id.new_announcement_image);
 
         setHasOptionsMenu(true);
 
@@ -68,10 +88,23 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
         // handle item selection
         switch (item.getItemId()) {
             case R.id.action_save:
-                //save the announcement
+                //get the current date
+                DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+                Date date = new Date();
+                String dateString = dateFormat.format(date);
+
+                //get the title and body
+                String titleString = titleField.getText().toString();
+                String bodyString = bodyField.getText().toString();
+
+                //create new announcement object
+                Announcement announcement = new Announcement(titleString, bodyString, dateString);
+
+                //do something to save the announcement to the network
+
                 Toast.makeText(getActivity(), "Save the Announcement!", Toast.LENGTH_SHORT).show();
                 return true;
-            case R.id.action_cancel:
+            case android.R.id.home:
                 //go back to announcements list
                 getFragmentManager().popBackStack();
                 return true;
@@ -102,6 +135,20 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         //do something with the results of choosing a photo and taking a picture
+        if(requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK){
+            Bundle extras = data.getExtras();
+            imageView.setImageBitmap((Bitmap)extras.get("data"));
+        }
+        else if(requestCode == SELECT_PICTURE_REQUEST && resultCode ==  Activity.RESULT_OK){
+            Uri uri = data.getData();
+            try{
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getActivity().getContentResolver(), uri);
+                imageView.setImageBitmap(bitmap);
+            }
+            catch(Exception e){
+                //do something?
+                e.printStackTrace();
+            }
+        }
     }
 }
-

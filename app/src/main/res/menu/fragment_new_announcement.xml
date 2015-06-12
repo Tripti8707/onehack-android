@@ -4,12 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.arbrr.onehack.ui.announcements.AnnouncementsFragment">
 
-    <item android:id="@+id/action_cancel"
-        android:title="@string/cancel"
-        app:showAsAction="always"/>
-
     <item android:id="@+id/action_save"
-        android:title="@string/save"
+        android:title="@string/save_text"
         app:showAsAction="always"/>
 
 </menu>
