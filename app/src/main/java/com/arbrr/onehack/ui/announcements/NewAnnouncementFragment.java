@@ -98,7 +98,7 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
                 String bodyString = bodyField.getText().toString();
 
                 //create new announcement object
-                Announcement announcement = new Announcement(titleString, bodyString, dateString);
+                OldAnnouncement announcement = new OldAnnouncement(titleString, bodyString, dateString);
 
                 //do something to save the announcement to the network
 
