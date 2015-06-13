@@ -24,10 +24,13 @@ import android.widget.Toast;
 import com.arbrr.onehack.R;
 import com.arbrr.onehack.data.model.Announcement;
 import com.arbrr.onehack.data.model.User;
+import com.arbrr.onehack.data.network.GenericResponse;
 import com.arbrr.onehack.data.network.NetworkManager;
 import com.arbrr.onehack.data.network.OneHackCallback;
 import com.arbrr.onehack.ui.MainActivity;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,25 +38,22 @@ import java.util.List;
 public class AnnouncementsFragment extends Fragment {
     private static final String tag = "ONEHACK-AF";
 
-    private NetworkManager networkManager;
+    private NetworkManager mNetworkManager;
     private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
+    private MyAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    private final static List<Announcement> announcementList = new ArrayList<Announcement>();
 
     public AnnouncementsFragment() {
         // Required empty public constructor.
     }
 
-    private void getOtherData() {
-        networkManager.getAnnouncements(new OneHackCallback<List<Announcement>>() {
+    private void getAnnouncements() {
+        mNetworkManager.getAnnouncements(new OneHackCallback<List<Announcement>>() {
             @Override
             public void success(List<Announcement> announcements) {
-                Log.d(tag, "Got " + announcements.size() + " announcements");
-                for(int i = 0; i < announcements.size(); i++){
-                    announcementList.add(announcements.get(i));
-                }
-                Log.d(tag, "List length after loop: " + announcementList.size());
+                // instantiate adapter
+                mAdapter = new MyAdapter(announcements);
+                mRecyclerView.setAdapter(mAdapter);
             }
 
             @Override
@@ -73,12 +73,9 @@ public class AnnouncementsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_announcements, container, false);
-        //getActivity().setTitle(R.string.announcements_title); //set ActionBar title
         ((MainActivity)getActivity()).getSupportActionBar().setTitle(R.string.announcements_title);
         ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         ((MainActivity)getActivity()).getSupportActionBar().setHomeButtonEnabled(false);
-
-        //announcementList = new ArrayList<Announcement>();
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.announcement_rv);
 
@@ -89,15 +86,13 @@ public class AnnouncementsFragment extends Fragment {
         mLayoutManager = new LinearLayoutManager(this.getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        //announcementList = new ArrayList<Announcement>();
-
-        //log user in
-        networkManager = NetworkManager.getInstance();
-        networkManager.logUserIn("admin@admin.com", "admin", new OneHackCallback<User>() {
+        //log user in - just temporary code until full app is ready
+        mNetworkManager = NetworkManager.getInstance();
+        mNetworkManager.logUserIn("admin@admin.com", "admin", new OneHackCallback<User>() {
             @Override
             public void success(User response) {
                 Log.d(tag, "Logged in!");
-                getOtherData();
+                getAnnouncements();
             }
 
             @Override
@@ -105,19 +100,6 @@ public class AnnouncementsFragment extends Fragment {
                 Log.d(tag, "Couldn't log in :(");
             }
         });
-
-        //-----------------------------------NOTE--------------------------------------
-        //this kinda works now. By declaring the ArrayList as "final static" the announcements
-        //are loaded ONLY if the view is reloaded (e.g. the user navigates to the NewAnnouncement
-        //Fragment and then goes back to the Announcements Fragment or if the user hits the back
-        //button and reopens the app.
-
-        //this always logs 0 for some reason?
-        Log.d(tag, "List length after logging in: " + announcementList.size());
-
-        // instantiate adapter
-        mAdapter = new MyAdapter(announcementList);
-        mRecyclerView.setAdapter(mAdapter);
 
         setHasOptionsMenu(true);
 
@@ -196,7 +178,30 @@ public class AnnouncementsFragment extends Fragment {
                     }
                     if (v.getId() == R.id.announcement_delete) {
                         //delete the announcement
-                        announcementList.remove(this.getAdapterPosition());
+                        mNetworkManager.deleteAnnouncement(mAdapter.getAnnouncementAt(this.getAdapterPosition()), new OneHackCallback<GenericResponse>() {
+                            @Override
+                            public void success(GenericResponse response) {
+                                Log.d(tag, "Successfully deleted announcmenet!");
+                            }
+
+                            @Override
+                            public void failure(Throwable error) {
+                                Log.d(tag, "Could not delete announcmenet ");
+                            }
+                        });
+
+//                        mNetworkManager.deleteAnnouncement(mAdapter.getAnnouncementAt(getAdapterPosition()), new OneHackCallback<GenericResponse>() {
+//                            @Override
+//                            public void success(GenericResponse response) {
+//                                Log.d(tag, "Successfully deleted announcmenet!");
+//                            }
+//
+//                            @Override
+//                            public void failure(Throwable error) {
+//                                Log.d(tag, "Could not delete announcement");
+//                            }
+//                        });
+                        mAdapter.deleteAnnouncementAt(this.getAdapterPosition());
                         mAdapter.notifyDataSetChanged(); //refresh recyler view
                         Toast.makeText(context, "Delete Announcement!", Toast.LENGTH_SHORT).show();
                     }
@@ -236,7 +241,15 @@ public class AnnouncementsFragment extends Fragment {
         }
 
         public MyAdapter(List<Announcement> announcementsIn) {
-            announcements = announcementsIn;
+            announcements = new ArrayList<Announcement>(announcementsIn);
+        }
+
+        public Announcement getAnnouncementAt(int position){
+            return announcements.get(position);
+        }
+
+        public void deleteAnnouncementAt(int position){
+            announcements.remove(position);
         }
 
         // Create new views (invoked by the layout manager)
@@ -257,7 +270,8 @@ public class AnnouncementsFragment extends Fragment {
             // - replace the contents of the view with that element
             holder.titleView.setText(announcements.get(i).name);
             holder.messageView.setText(announcements.get(i).info);
-            holder.dateView.setText(announcements.get(i).broadcastTime.toString());
+            DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+            holder.dateView.setText(dateFormat.format(announcements.get(i).broadcastTime));
             holder.titleView.setTextColor(Color.BLACK);
             holder.messageView.setTextColor(Color.GRAY);
             holder.dateView.setTextColor(Color.GRAY);

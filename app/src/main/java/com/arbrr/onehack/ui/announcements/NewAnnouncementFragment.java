@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,16 +20,20 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.arbrr.onehack.R;
+import com.arbrr.onehack.data.model.Announcement;
+import com.arbrr.onehack.data.model.User;
+import com.arbrr.onehack.data.network.NetworkManager;
+import com.arbrr.onehack.data.network.OneHackCallback;
 import com.arbrr.onehack.ui.MainActivity;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
  * Created by Nilay on 6/2/15.
  */
 public class NewAnnouncementFragment extends Fragment implements View.OnClickListener{
+    private static final String tag = "ONEHACK-AF";
+
     //request codes for intents
     private final static int SELECT_PICTURE_REQUEST = 1;
     private final static int CAMERA_REQUEST = 2;
@@ -39,6 +44,8 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
     private Button takePictureButton;
     private Button choosePhotoButton;
     private ImageView imageView;
+
+    private NetworkManager mNetworkManager;
 
     public NewAnnouncementFragment() {
         // Required empty public constructor.
@@ -72,6 +79,20 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
         choosePhotoButton.setVisibility(View.GONE);
         imageView = (ImageView) view.findViewById(R.id.new_announcement_image);
 
+        //log user in - just temporary code until full app is ready
+        mNetworkManager = NetworkManager.getInstance();
+        mNetworkManager.logUserIn("admin@admin.com", "admin", new OneHackCallback<User>() {
+            @Override
+            public void success(User response) {
+                Log.d(tag, "Logged in!");
+            }
+
+            @Override
+            public void failure(Throwable error) {
+                Log.d(tag, "Couldn't log in :(");
+            }
+        });
+
         setHasOptionsMenu(true);
 
         return view;
@@ -89,18 +110,29 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
         switch (item.getItemId()) {
             case R.id.action_save:
                 //get the current date
-                DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
                 Date date = new Date();
-                String dateString = dateFormat.format(date);
-
                 //get the title and body
                 String titleString = titleField.getText().toString();
                 String bodyString = bodyField.getText().toString();
 
                 //create new announcement object
-                OldAnnouncement announcement = new OldAnnouncement(titleString, bodyString, dateString);
+                Announcement a = new Announcement();
+                a.name = titleString;
+                a.info = bodyString;
+                a.broadcastTime = date;
 
-                //do something to save the announcement to the network
+                //save the announcement to the network
+                mNetworkManager.createAnnouncement(a, new OneHackCallback<Announcement>() {
+                    @Override
+                    public void success(Announcement announcement) {
+                        Log.d(tag, "Successfully created announcement!");
+                    }
+
+                    @Override
+                    public void failure(Throwable error) {
+                        Log.d(tag, ":(");
+                    }
+                });
 
                 Toast.makeText(getActivity(), "Save the Announcement!", Toast.LENGTH_SHORT).show();
                 return true;
