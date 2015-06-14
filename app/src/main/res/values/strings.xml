@@ -1,18 +1,27 @@
 <resources>
-  <string name="app_name">OneHack</string>
-  <string name="email">Email</string>
-  <string name="password">Password</string>
-  <string name="log_in">Log In</string>
-  <string name="error_invalid_email">Please enter a valid email address</string>
-  <string name="error_invalid_password">Please enter a valid password</string>
-  <string name="logging_in">Logging in...</string>
-  <string name="error_log_in">Log in failed. Please try again.</string>
-  <string name="api_account_type">com.arbrr.onehack.api</string>
+    <string name="app_name">OneHack</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="log_in">Log In</string>
+    <string name="error_invalid_email">Please enter a valid email address</string>
+    <string name="error_invalid_password">Please enter a valid password</string>
+    <string name="logging_in">Logging in...</string>
+    <string name="error_log_in">Log in failed. Please try again.</string>
+    <string name="api_account_type">com.arbrr.onehack.api</string>
     <string name="title_activity_main">OneHack</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- NAVIGATION DRAWER TITLES -->
+    <string-array name="nav_titles">
+        <item>Announcements</item>
+        <item>Events</item>
+        <item>Contacts</item>
+        <item>Awards</item>
+    </string-array>
+
 </resources>
