@@ -13,6 +13,8 @@ import com.arbrr.onehack.R;
  */
 public class AwardsFragment extends Fragment{
 
+    public static final String TITLE = "Awards";
+
     public AwardsFragment() {
         // Required empty public constructor.
     }

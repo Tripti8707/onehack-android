@@ -13,6 +13,8 @@ import com.arbrr.onehack.R;
  */
 public class ContactsFragment extends Fragment {
 
+    public static final String TITLE = "Contacts";
+
     public ContactsFragment() {
         // Required empty public constructor.
     }

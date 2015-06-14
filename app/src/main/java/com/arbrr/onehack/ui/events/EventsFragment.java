@@ -13,6 +13,8 @@ import com.arbrr.onehack.R;
  */
 public class EventsFragment extends Fragment {
 
+    public static final String TITLE = "Events";
+
     public EventsFragment() {
         // Required empty public constructor.
     }

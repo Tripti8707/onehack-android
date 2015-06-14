@@ -95,7 +95,7 @@ public class MainActivity extends ActionBarActivity {
     /**
      * Determines which fragment should populate the main_fragment_container based on the selected
      * position.
-     * @param position
+     * @param position position of the fragment in the list
      */
     private void selectFragment(int position) {
         switch (position) {
@@ -122,7 +122,7 @@ public class MainActivity extends ActionBarActivity {
 
     /**
      * Updates the main_fragment_container with the given fragment.
-     * @param fragment
+     * @param fragment fragment to replace the main container with
      */
     private void updateFragment(Fragment fragment) {
         FragmentManager fragmentManager = getFragmentManager();
@@ -134,7 +134,7 @@ public class MainActivity extends ActionBarActivity {
 
     /**
      * Sets the supportActionBar title to the given title.
-     * @param title
+     * @param title title of the action bar
      */
     public void setTitle(CharSequence title) {
         // null pointer check
