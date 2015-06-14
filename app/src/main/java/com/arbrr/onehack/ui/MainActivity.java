@@ -141,6 +141,17 @@ public class MainActivity extends ActionBarActivity {
         if(getSupportActionBar() != null) getSupportActionBar().setTitle(title);
     }
 
+    @Override
+    public void onBackPressed() {
+        if(mDrawerLayout.isDrawerOpen(mNavDrawerList)) {
+            mDrawerLayout.closeDrawer(mNavDrawerList); // close nav drawer if open
+        } else if(getFragmentManager().getBackStackEntryCount() > 0) {
+            getFragmentManager().popBackStack(); // otherwise pop fragment back stack
+        } else {
+            super.onBackPressed(); // let the android overlords handle that shit
+        }
+    }
+
     //////////////////// DrawerItemClickListener ////////////////////
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
 
