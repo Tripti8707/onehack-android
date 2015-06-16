@@ -2,11 +2,18 @@ package com.arbrr.onehack.ui.events;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.arbrr.onehack.R;
+import com.arbrr.onehack.data.model.Event;
+import com.arbrr.onehack.data.model.User;
+import com.arbrr.onehack.data.network.NetworkManager;
+import com.arbrr.onehack.data.network.OneHackCallback;
+
+import java.util.List;
 
 /**
  * Created by Omkar Moghe on 5/27/15
@@ -14,6 +21,9 @@ import com.arbrr.onehack.R;
 public class EventsFragment extends Fragment {
 
     public static final String TITLE = "Events";
+    public static final String TAG = "EventsFragment";
+
+    private NetworkManager networkManager;
 
     public EventsFragment() {
         // Required empty public constructor.
@@ -29,8 +39,36 @@ public class EventsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_events, container, false);
 
-        // Instantiate any views in this layout here.
+        networkManager = NetworkManager.getInstance();
+        networkManager.logUserIn("admin@admin.com", "admin", new OneHackCallback<User>() {
+            @Override
+            public void success(User response) {
+                Log.d(TAG, "successfully logged in...");
+                getEvents();
+            }
+
+            @Override
+            public void failure(Throwable error) {
+
+            }
+        });
 
         return view;
+    }
+
+    public void getEvents() {
+        networkManager.getEvents(new OneHackCallback<List<Event>>() {
+            @Override
+            public void success(List<Event> response) {
+                for(Event e : response) {
+                    Log.d(TAG, e.name + " - " + e.startTime + " - " + e.endTime);
+                }
+            }
+
+            @Override
+            public void failure(Throwable error) {
+
+            }
+        });
     }
 }
