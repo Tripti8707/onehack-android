@@ -2,6 +2,7 @@ package com.arbrr.onehack.ui.events;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,9 +22,12 @@ import java.util.List;
 public class EventsFragment extends Fragment {
 
     public static final String TITLE = "Events";
-    public static final String TAG = "EventsFragment";
+    public static final String TAG   = "EventsFragment";
 
     private NetworkManager networkManager;
+
+    // ViewPager
+    ViewPager mEventsViewPager;
 
     public EventsFragment() {
         // Required empty public constructor.
@@ -39,6 +43,10 @@ public class EventsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_events, container, false);
 
+        // ViewPager
+        mEventsViewPager = (ViewPager) view.findViewById(R.id.events_pager);
+
+        // Log in
         networkManager = NetworkManager.getInstance();
         networkManager.logUserIn("admin@admin.com", "admin", new OneHackCallback<User>() {
             @Override
@@ -61,7 +69,7 @@ public class EventsFragment extends Fragment {
             @Override
             public void success(List<Event> response) {
                 for(Event e : response) {
-                    Log.d(TAG, e.name + " - " + e.startTime + " - " + e.endTime);
+                    Log.d(TAG, e.getName() + " - " + e.getStartTime() + " - " + e.getEndTime());
                 }
             }
 
