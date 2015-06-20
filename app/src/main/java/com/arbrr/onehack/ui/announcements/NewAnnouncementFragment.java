@@ -19,7 +19,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.arbrr.onehack.R;
 import com.arbrr.onehack.data.model.Announcement;
@@ -122,9 +121,9 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
 
                 //create new announcement object
                 Announcement a = new Announcement();
-                a.name = titleString;
-                a.info = bodyString;
-                a.broadcastTime = date;
+                a.setName(titleString);
+                a.setInfo(bodyString);
+                a.setBroadcastTime(date);
 
                 //save the announcement to the network
                 mNetworkManager.createAnnouncement(a, new OneHackCallback<Announcement>() {
@@ -138,8 +137,6 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
                         Log.d(tag, ":(");
                     }
                 });
-
-                Toast.makeText(getActivity(), "Saved Announcement!", Toast.LENGTH_SHORT).show();
 
                 //close keyboard
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);

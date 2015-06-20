@@ -3,7 +3,6 @@ package com.arbrr.onehack.ui.announcements;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -147,7 +146,7 @@ public class AnnouncementsFragment extends Fragment {
             private TextView deleteView;
             private boolean isSlided;
 
-            public ViewHolder(View v, Context context) {
+            public ViewHolder(View v) {
                 super(v);
                 cv = (CardView) itemView.findViewById(R.id.announcement_card);
                 titleView = (TextView) itemView.findViewById(R.id.announcement_title);
@@ -223,6 +222,8 @@ public class AnnouncementsFragment extends Fragment {
                     cv.setLayoutParams(mlp);
                 }
                 else {
+                    //difference in CardView between Lollipop and pre-Lollipop devices. See ViewHolder
+                    //constructor for more details
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
                         cv.clearAnimation();
                         ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) cv.getLayoutParams();
@@ -272,7 +273,7 @@ public class AnnouncementsFragment extends Fragment {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.announcement, parent, false);
 
-            ViewHolder vh = new ViewHolder(v, parent.getContext());
+            ViewHolder vh = new ViewHolder(v);
             return vh;
         }
 
@@ -281,22 +282,22 @@ public class AnnouncementsFragment extends Fragment {
         public void onBindViewHolder(ViewHolder holder, int i) {
             // - get element from your dataset at this position
             // - replace the contents of the view with that element
-            holder.titleView.setText(announcements.get(i).name);
-            holder.messageView.setText(announcements.get(i).info);
+            holder.titleView.setText(announcements.get(i).getName());
+            holder.messageView.setText(announcements.get(i).getInfo());
 
             //check when the announcement was created and display a date/time depending on that
             Date date = new Date();
             DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
             String dateToday = dateFormat.format(date);
-            String dateAnnouncement = dateFormat.format(announcements.get(i).broadcastTime);
+            String dateAnnouncement = dateFormat.format(announcements.get(i).getBroadcastTime());
             if(dateToday.equals(dateAnnouncement)){
                 //if the announcement was created today, display exact time it was created
                 DateFormat timeFormat = new SimpleDateFormat("h:mm a");
-                holder.dateView.setText(timeFormat.format(announcements.get(i).broadcastTime));
+                holder.dateView.setText(timeFormat.format(announcements.get(i).getBroadcastTime()));
             }
             else{
                 //if the announcement was created yesterday or before, display the date it was created
-                holder.dateView.setText(dateFormat.format(announcements.get(i).broadcastTime));
+                holder.dateView.setText(dateFormat.format(announcements.get(i).getBroadcastTime()));
             }
         }
 
