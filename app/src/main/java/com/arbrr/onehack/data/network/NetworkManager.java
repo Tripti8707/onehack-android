@@ -1,5 +1,6 @@
 package com.arbrr.onehack.data.network;
 
+import android.hardware.camera2.params.RggbChannelVector;
 import android.util.Log;
 
 import com.arbrr.onehack.data.model.Announcement;
@@ -12,6 +13,9 @@ import com.arbrr.onehack.data.model.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import retrofit.Callback;
@@ -150,6 +154,15 @@ public class NetworkManager {
             @Override
             public void success(List<Hackathon> hackathons, Response response) {
                 Log.d(tag, "Successfully got " + hackathons.size() + " hackathons");
+
+                // Sorts alphabetically
+                Collections.sort(hackathons, new Comparator<Hackathon>() {
+                    @Override
+                    public int compare(Hackathon lhs, Hackathon rhs) {
+                        return lhs.getName().compareTo(rhs.getName());
+                    }
+                });
+
                 callback.success(hackathons);
             }
 
@@ -198,6 +211,15 @@ public class NetworkManager {
             @Override
             public void success(List<Announcement> announcements, Response response) {
                 Log.d(tag, "Successfully got " + announcements.size() + " announcements");
+
+                // Sorts reverse chronologically
+                Collections.sort(announcements, new Comparator<Announcement>() {
+                    @Override
+                    public int compare(Announcement lhs, Announcement rhs) {
+                        return rhs.getBroadcastTime().compareTo(lhs.getBroadcastTime());
+                    }
+                });
+
                 callback.success(announcements);
             }
 
@@ -262,6 +284,15 @@ public class NetworkManager {
             @Override
             public void success(List<Event> events, Response response) {
                 Log.d(tag, "Successfully got " + events.size() + " events");
+
+                // Sorts chronologically
+                Collections.sort(events, new Comparator<Event>() {
+                    @Override
+                    public int compare(Event lhs, Event rhs) {
+                        return lhs.getStartTime().compareTo(rhs.getStartTime());
+                    }
+                });
+
                 callback.success(events);
             }
 
