@@ -1,4 +1,4 @@
-package com.arbrr.onehack.ui.guide;
+package com.arbrr.onehack.ui.contacts;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -8,9 +8,14 @@ import android.view.ViewGroup;
 
 import com.arbrr.onehack.R;
 
-public class GuideFragment extends Fragment {
+/**
+ * Created by Omkar Moghe on 5/27/15
+ */
+public class ContactsFragment extends Fragment {
 
-    public GuideFragment() {
+    public static final String TITLE = "Contacts";
+
+    public ContactsFragment() {
         // Required empty public constructor.
     }
 
@@ -22,7 +27,7 @@ public class GuideFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_guide, container, false);
+        View view = inflater.inflate(R.layout.fragment_contacts, container, false);
 
         // Instantiate any views in this layout here.
 

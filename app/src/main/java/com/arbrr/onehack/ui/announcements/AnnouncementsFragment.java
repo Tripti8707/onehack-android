@@ -34,7 +34,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Created by Omkar Moghe on 5/27/15
+ */
 public class AnnouncementsFragment extends Fragment {
+
+    public static final String TITLE = "Announcements";
+
     private static final String tag = "ONEHACK-AF";
 
     private NetworkManager mNetworkManager;
