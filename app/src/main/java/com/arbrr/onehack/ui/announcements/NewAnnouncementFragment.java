@@ -2,6 +2,7 @@ package com.arbrr.onehack.ui.announcements;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -14,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -61,7 +63,6 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_new_announcement, container, false);
-        //getActivity().setTitle(R.string.title_activity_main); //set ActionBar title
         ((MainActivity)getActivity()).getSupportActionBar().setTitle(R.string.new_announcement_title);
         ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ((MainActivity)getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
@@ -106,6 +107,10 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        View view = getActivity().getCurrentFocus();
+        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(
+                Context.INPUT_METHOD_SERVICE);
+
         // handle item selection
         switch (item.getItemId()) {
             case R.id.action_save:
@@ -134,9 +139,18 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
                     }
                 });
 
-                Toast.makeText(getActivity(), "Save the Announcement!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Saved Announcement!", Toast.LENGTH_SHORT).show();
+
+                //close keyboard
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
+                //navigate back to announcments fragment
+                getFragmentManager().popBackStack();
                 return true;
             case android.R.id.home:
+                //close keyboard
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
                 //go back to announcements list
                 getFragmentManager().popBackStack();
                 return true;

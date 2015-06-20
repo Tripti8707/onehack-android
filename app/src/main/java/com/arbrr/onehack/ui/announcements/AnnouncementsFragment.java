@@ -4,7 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
-import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,7 +19,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.arbrr.onehack.R;
 import com.arbrr.onehack.data.model.Announcement;
@@ -32,8 +31,8 @@ import com.arbrr.onehack.ui.MainActivity;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-
 
 public class AnnouncementsFragment extends Fragment {
     private static final String tag = "ONEHACK-AF";
@@ -88,7 +87,7 @@ public class AnnouncementsFragment extends Fragment {
 
         //log user in - just temporary code until full app is ready
         mNetworkManager = NetworkManager.getInstance();
-        mNetworkManager.logUserIn("admin@admin.com", "admin", new OneHackCallback<User>() {
+        mNetworkManager.logUserIn("tom_erdmann@mac.com", "test", new OneHackCallback<User>() {
             @Override
             public void success(User response) {
                 Log.d(tag, "Logged in!");
@@ -141,7 +140,6 @@ public class AnnouncementsFragment extends Fragment {
             private TextView dateView;
             private TextView deleteView;
             private boolean isSlided;
-            private Context context;
 
             public ViewHolder(View v, Context context) {
                 super(v);
@@ -149,13 +147,23 @@ public class AnnouncementsFragment extends Fragment {
                 titleView = (TextView) itemView.findViewById(R.id.announcement_title);
                 messageView = (TextView) itemView.findViewById(R.id.announcement_message);
                 dateView = (TextView) itemView.findViewById(R.id.announcement_date);
-
                 deleteView = (TextView) itemView.findViewById(R.id.announcement_delete);
+
                 cv.setOnClickListener(this);
                 deleteView.setOnClickListener(this);
 
+                //CardView's work differently on pre-Lollipop devices. They use padding to create
+                //shoadow. Thus, on pre-L devices use margins to negate the padding. Otherwise
+                //wierd gaps appear between the cards
+                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
+                    ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) cv.getLayoutParams();
+                    mlp.topMargin -= (int)(cv.getMaxCardElevation() * 1.5 + (1 - Math.cos(Math.PI / 4)) * cv.getRadius());
+                    mlp.rightMargin -= (int)(cv.getMaxCardElevation() + (1 - Math.cos(Math.PI / 4)) * cv.getRadius());
+                    mlp.bottomMargin = 0;
+                    cv.setLayoutParams(mlp);
+                }
+
                 isSlided = false;
-                this.context = context;
             }
 
             @Override
@@ -167,7 +175,8 @@ public class AnnouncementsFragment extends Fragment {
                     slideOver.setFillAfter(true);
                     slideOver.setAnimationListener(this);
                     cv.startAnimation(slideOver);
-                } else {
+                }
+                else {
                     if (v.getId() == R.id.announcement_card) {
                         //slide back the announcement covering up the delete button
                         TranslateAnimation slideOver = new TranslateAnimation(0, deleteView.getWidth(), 0, 0);
@@ -190,20 +199,8 @@ public class AnnouncementsFragment extends Fragment {
                             }
                         });
 
-//                        mNetworkManager.deleteAnnouncement(mAdapter.getAnnouncementAt(getAdapterPosition()), new OneHackCallback<GenericResponse>() {
-//                            @Override
-//                            public void success(GenericResponse response) {
-//                                Log.d(tag, "Successfully deleted announcmenet!");
-//                            }
-//
-//                            @Override
-//                            public void failure(Throwable error) {
-//                                Log.d(tag, "Could not delete announcement");
-//                            }
-//                        });
                         mAdapter.deleteAnnouncementAt(this.getAdapterPosition());
                         mAdapter.notifyDataSetChanged(); //refresh recyler view
-                        Toast.makeText(context, "Delete Announcement!", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -218,12 +215,22 @@ public class AnnouncementsFragment extends Fragment {
                     mlp.rightMargin += deleteView.getWidth();
                     mlp.leftMargin = -deleteView.getWidth();
                     cv.setLayoutParams(mlp);
-                } else {
-                    cv.clearAnimation();
-                    ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) cv.getLayoutParams();
-                    mlp.rightMargin = 0;
-                    mlp.leftMargin = 0;
-                    cv.setLayoutParams(mlp);
+                }
+                else {
+                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
+                        cv.clearAnimation();
+                        ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) cv.getLayoutParams();
+                        mlp.leftMargin = 0;
+                        mlp.rightMargin = -(int)(cv.getMaxCardElevation() + (1 - Math.cos(Math.PI / 4)) * cv.getRadius());
+                        cv.setLayoutParams(mlp);
+                    }
+                    else {
+                        cv.clearAnimation();
+                        ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) cv.getLayoutParams();
+                        mlp.rightMargin = 0;
+                        mlp.leftMargin = 0;
+                        cv.setLayoutParams(mlp);
+                    }
                 }
 
                 isSlided = !isSlided;
@@ -231,12 +238,12 @@ public class AnnouncementsFragment extends Fragment {
 
             @Override
             public void onAnimationRepeat(Animation animation) {
-
+                //do nothing - required override
             }
 
             @Override
             public void onAnimationStart(Animation animation) {
-
+                //do nothing - required override
             }
         }
 
@@ -270,11 +277,21 @@ public class AnnouncementsFragment extends Fragment {
             // - replace the contents of the view with that element
             holder.titleView.setText(announcements.get(i).name);
             holder.messageView.setText(announcements.get(i).info);
+
+            //check when the announcement was created and display a date/time depending on that
+            Date date = new Date();
             DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-            holder.dateView.setText(dateFormat.format(announcements.get(i).broadcastTime));
-            holder.titleView.setTextColor(Color.BLACK);
-            holder.messageView.setTextColor(Color.GRAY);
-            holder.dateView.setTextColor(Color.GRAY);
+            String dateToday = dateFormat.format(date);
+            String dateAnnouncement = dateFormat.format(announcements.get(i).broadcastTime);
+            if(dateToday.equals(dateAnnouncement)){
+                //if the announcement was created today, display exact time it was created
+                DateFormat timeFormat = new SimpleDateFormat("h:mm a");
+                holder.dateView.setText(timeFormat.format(announcements.get(i).broadcastTime));
+            }
+            else{
+                //if the announcement was created yesterday or before, display the date it was created
+                holder.dateView.setText(dateFormat.format(announcements.get(i).broadcastTime));
+            }
         }
 
         // Return the size of your dataset (invoked by the layout manager)
