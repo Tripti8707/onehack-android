@@ -5,8 +5,9 @@
     tools:context="com.arbrr.onehack.ui.announcements.AnnouncementsFragment">
 
     <item android:id="@+id/action_compose"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/create_action"
         android:title="@string/new_announcement_title"
         app:showAsAction="always"/>
+
 
 </menu>
