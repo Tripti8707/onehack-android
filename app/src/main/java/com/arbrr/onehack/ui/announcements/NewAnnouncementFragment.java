@@ -208,13 +208,14 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
 
         static AddPictureDialog newInstance() {
             AddPictureDialog dialog = new AddPictureDialog();
+            //dialog.getDialog().setTitle(R.string.new_announcement_dialog_title);
             return dialog;
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-
+            this.getDialog().setTitle(R.string.new_announcement_dialog_title);
             View v = inflater.inflate(R.layout.dialog_new_announcement, container, false);
 
             Button takePictureButton = (Button) v.findViewById(R.id.take_picture_button);
