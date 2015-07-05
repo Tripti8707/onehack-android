@@ -1,6 +1,7 @@
 package com.arbrr.onehack.ui.announcements;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -41,12 +42,11 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
 
     private EditText titleField;
     private EditText bodyField;
-    private Button addPictureButton;
-    private Button takePictureButton;
-    private Button choosePhotoButton;
     private ImageView imageView;
 
     private NetworkManager mNetworkManager;
+
+    private AddPictureDialog dialog;
 
     public NewAnnouncementFragment() {
         // Required empty public constructor.
@@ -69,14 +69,8 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
         titleField = (EditText) view.findViewById(R.id.new_title);
         bodyField = (EditText) view.findViewById(R.id.new_body);
 
-        addPictureButton = (Button) view.findViewById(R.id.add_picture_button);
+        Button addPictureButton = (Button) view.findViewById(R.id.add_picture_button);
         addPictureButton.setOnClickListener(this);
-        takePictureButton = (Button) view.findViewById(R.id.take_picture_button);
-        takePictureButton.setOnClickListener(this);
-        takePictureButton.setVisibility(View.GONE);
-        choosePhotoButton = (Button) view.findViewById(R.id.choose_photo_button);
-        choosePhotoButton.setOnClickListener(this);
-        choosePhotoButton.setVisibility(View.GONE);
         imageView = (ImageView) view.findViewById(R.id.new_announcement_image);
 
         //log user in - just temporary code until full app is ready
@@ -139,7 +133,9 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
                 });
 
                 //close keyboard
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                if (view != null) {
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
 
                 //navigate back to announcments fragment
                 getFragmentManager().popBackStack();
@@ -159,28 +155,35 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
     @Override
     public void onClick(View v){
         if(v.getId() == R.id.add_picture_button){
-            takePictureButton.setVisibility(View.VISIBLE);
-            choosePhotoButton.setVisibility(View.VISIBLE);
-        }
-        else if(v.getId() == R.id.choose_photo_button){
-            //let the user choose a picture through whatever program he/she wishes
-            Intent selectPicture = new Intent(Intent.ACTION_GET_CONTENT);
-            selectPicture.setType("image/*");
-            startActivityForResult(Intent.createChooser(selectPicture, "Select Picture"), SELECT_PICTURE_REQUEST);
-        }
-        else if(v.getId() == R.id.take_picture_button){
-            //allow user to take a picture
-            Intent takePic = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            startActivityForResult(takePic, CAMERA_REQUEST);
+            dialog = AddPictureDialog.newInstance();
+            dialog.setTargetFragment(this, AddPictureDialog.REQUEST_CODE);
+            dialog.show(this.getFragmentManager(), "AddPictureDialog");
         }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //do something with the results of choosing a photo and taking a picture
-        if(requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK){
+        if(requestCode == AddPictureDialog.REQUEST_CODE) {
+            dialog.dismiss();
+
+            int actionRequest = data.getIntExtra(AddPictureDialog.ACTION_KEY, 0);
+
+            if(actionRequest == SELECT_PICTURE_REQUEST){
+                //let the user choose a picture through whatever program he/she wishes
+                Intent selectPicture = new Intent(Intent.ACTION_GET_CONTENT);
+                selectPicture.setType("image/*");
+                startActivityForResult(Intent.createChooser(selectPicture, "Select Picture"), SELECT_PICTURE_REQUEST);
+            }
+            else if(actionRequest == CAMERA_REQUEST){
+                //let the user take a picture
+                Intent takePic = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(takePic, CAMERA_REQUEST);;
+            }
+        }
+        //do something with the results of choosing a photo or taking a picture
+        else if(requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK){
             Bundle extras = data.getExtras();
-            imageView.setImageBitmap((Bitmap)extras.get("data"));
+            imageView.setImageBitmap((Bitmap) extras.get("data"));
         }
         else if(requestCode == SELECT_PICTURE_REQUEST && resultCode ==  Activity.RESULT_OK){
             Uri uri = data.getData();
@@ -192,6 +195,49 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
                 //do something?
                 e.printStackTrace();
             }
+        }
+    }
+
+    //DialogFragment allowing the user to select whether they'd like to upload an exisiting photo
+    //or take a new one
+    public static class AddPictureDialog extends DialogFragment{
+        public final static String ACTION_KEY = "Action";
+        private final static int SELECT_PICTURE_REQUEST = 1;
+        private final static int CAMERA_REQUEST = 2;
+        private final static int REQUEST_CODE = 3; //this dialog's request code
+
+        static AddPictureDialog newInstance() {
+            AddPictureDialog dialog = new AddPictureDialog();
+            return dialog;
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+
+            View v = inflater.inflate(R.layout.dialog_new_announcement, container, false);
+
+            Button takePictureButton = (Button) v.findViewById(R.id.take_picture_button);
+            takePictureButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    //tell host fragment to start an intent to take a picture
+                    Intent intent = new Intent();
+                    intent.putExtra(ACTION_KEY, CAMERA_REQUEST);
+                    getTargetFragment().onActivityResult(getTargetRequestCode(), REQUEST_CODE, intent);
+                }
+            });
+
+            Button choosePicturebutton = (Button) v.findViewById(R.id.choose_picture_button);
+            choosePicturebutton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    //tell host fragment to start an intent to let the user select a picture
+                    Intent intent = new Intent();
+                    intent.putExtra(ACTION_KEY, SELECT_PICTURE_REQUEST);
+                    getTargetFragment().onActivityResult(getTargetRequestCode(), REQUEST_CODE, intent);
+                }
+            });
+
+            return v;
         }
     }
 }
