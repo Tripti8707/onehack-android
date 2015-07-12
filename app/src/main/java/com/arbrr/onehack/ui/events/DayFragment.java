@@ -1,15 +1,11 @@
 package com.arbrr.onehack.ui.events;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.arbrr.onehack.data.model.Event;
-
-import java.util.ArrayList;
 
 /**
  * Created by Omkar Moghe on 6/17/2015.
@@ -18,16 +14,17 @@ public class DayFragment extends Fragment {
 
     public static final String TAG = "DayFragment";
 
-    public DayFragment() {
+    private int mStart, mEnd;
 
+    public DayFragment() {
     }
 
-    public static DayFragment newInstance(ArrayList<Event> events) {
+    public static DayFragment newInstance(int start, int end) {
         DayFragment f = new DayFragment();
 
         Bundle args = new Bundle();
-        // TODO: put ArrayList of events into the bundle...
-        // TODO: could use integer indexes of "master" sorted event List...
+        args.putInt("start", start);
+        args.putInt("end", end);
         f.setArguments(args);
 
         return f;
@@ -44,5 +41,11 @@ public class DayFragment extends Fragment {
                              ViewGroup container,
                              Bundle savedInstanceState) {
         return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    private void setIndexes() {
+        Bundle args = getArguments();
+        mStart = args.getInt("start");
+        mEnd = args.getInt("end");
     }
 }

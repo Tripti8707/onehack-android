@@ -14,6 +14,7 @@ import com.arbrr.onehack.data.model.User;
 import com.arbrr.onehack.data.network.NetworkManager;
 import com.arbrr.onehack.data.network.OneHackCallback;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,6 +29,8 @@ public class EventsFragment extends Fragment {
 
     // ViewPager
     ViewPager mEventsViewPager;
+
+    private ArrayList<ArrayList<Integer>> indexMap;
 
     public EventsFragment() {
         // Required empty public constructor.
@@ -68,9 +71,7 @@ public class EventsFragment extends Fragment {
         networkManager.getEvents(new OneHackCallback<List<Event>>() {
             @Override
             public void success(List<Event> response) {
-                for(Event e : response) {
-                    Log.d(TAG, e.getName() + " - " + e.getStartTime() + " - " + e.getEndTime());
-                }
+                updateEventsManager(response);
             }
 
             @Override
@@ -78,5 +79,10 @@ public class EventsFragment extends Fragment {
 
             }
         });
+    }
+
+    private void updateEventsManager (List<Event> update) {
+        EventsManager.setEvents(update);
+        indexMap = EventsManager.buildIndexes();
     }
 }
