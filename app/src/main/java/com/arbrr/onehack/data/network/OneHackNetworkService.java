@@ -1,7 +1,5 @@
 package com.arbrr.onehack.data.network;
 
-import android.graphics.AvoidXfermode;
-
 import com.arbrr.onehack.data.model.Announcement;
 import com.arbrr.onehack.data.model.Event;
 import com.arbrr.onehack.data.model.Hackathon;
@@ -16,7 +14,6 @@ import retrofit.Callback;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
-import retrofit.http.HEAD;
 import retrofit.http.Header;
 import retrofit.http.POST;
 import retrofit.http.PUT;

@@ -3,7 +3,13 @@ package com.arbrr.onehack.data.network;
 import android.hardware.camera2.params.RggbChannelVector;
 import android.util.Log;
 
-import com.arbrr.onehack.data.model.*;
+import com.arbrr.onehack.data.model.Announcement;
+import com.arbrr.onehack.data.model.Event;
+import com.arbrr.onehack.data.model.Hackathon;
+import com.arbrr.onehack.data.model.HackerRole;
+import com.arbrr.onehack.data.model.Location;
+import com.arbrr.onehack.data.model.ModelObject;
+import com.arbrr.onehack.data.model.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -13,7 +19,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import retrofit.Callback;
-import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
