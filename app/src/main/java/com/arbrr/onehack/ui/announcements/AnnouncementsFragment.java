@@ -1,8 +1,8 @@
 package com.arbrr.onehack.ui.announcements;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -122,7 +122,7 @@ public class AnnouncementsFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_compose:
                 //switch to NewAnnouncement Fragment
-                FragmentManager fragmentManager = getActivity().getFragmentManager();
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 NewAnnouncementFragment newAnnouncementFragment = new NewAnnouncementFragment();
                 fragmentTransaction.replace(R.id.main_fragment_container, newAnnouncementFragment);

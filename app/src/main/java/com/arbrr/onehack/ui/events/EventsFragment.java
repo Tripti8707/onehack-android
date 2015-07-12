@@ -1,8 +1,9 @@
 package com.arbrr.onehack.ui.events;
 
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,8 +28,9 @@ public class EventsFragment extends Fragment {
 
     private NetworkManager networkManager;
 
-    // ViewPager
+    // ViewPager stuff
     ViewPager mEventsViewPager;
+    DayPagerAdapter mDayPagerAdapter;
 
     private ArrayList<ArrayList<Integer>> indexMap;
 
@@ -46,9 +48,6 @@ public class EventsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_events, container, false);
 
-        // ViewPager
-        mEventsViewPager = (ViewPager) view.findViewById(R.id.events_pager);
-
         // Log in
         networkManager = NetworkManager.getInstance();
         networkManager.logUserIn("admin@admin.com", "admin", new OneHackCallback<User>() {
@@ -63,6 +62,11 @@ public class EventsFragment extends Fragment {
 
             }
         });
+
+        // ViewPager
+        mEventsViewPager = (ViewPager) view.findViewById(R.id.events_pager);
+        mDayPagerAdapter = new DayPagerAdapter(getFragmentManager());
+        mEventsViewPager.setAdapter(mDayPagerAdapter);
 
         return view;
     }
@@ -84,5 +88,6 @@ public class EventsFragment extends Fragment {
     private void updateEventsManager (List<Event> update) {
         EventsManager.setEvents(update);
         indexMap = EventsManager.buildIndexes();
+        mDayPagerAdapter.notifyDataSetChanged();
     }
 }

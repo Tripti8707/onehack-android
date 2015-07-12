@@ -21,7 +21,6 @@ public class EventsManager {
 
             ArrayList<ArrayList<Integer>> indexMap = new ArrayList<>();
 
-            int index = 0;
             int start = 0;
             int end = 0;
             int lastDate = events.get(0).getStartTime().getDate();
@@ -33,11 +32,10 @@ public class EventsManager {
                     ArrayList<Integer> arr = new ArrayList<>();
                     arr.add(start);
                     arr.add(end);
-                    indexMap.set(index, arr);
+                    indexMap.add(arr);
 
                     start = end;
                     lastDate = e.getStartTime().getDate();
-                    ++index;
                 }
             }
 

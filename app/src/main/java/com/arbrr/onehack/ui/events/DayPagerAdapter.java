@@ -28,4 +28,9 @@ public class DayPagerAdapter extends FragmentStatePagerAdapter {
         if (EventsManager.buildIndexes() != null) return EventsManager.buildIndexes().size();
         else return 0;
     }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return "test";
+    }
 }

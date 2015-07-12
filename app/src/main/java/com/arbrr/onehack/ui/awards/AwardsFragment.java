@@ -1,7 +1,7 @@
 package com.arbrr.onehack.ui.awards;
 
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +11,7 @@ import com.arbrr.onehack.R;
 /**
  * Created by Omkar Moghe on 6/14/2015.
  */
-public class AwardsFragment extends Fragment{
+public class AwardsFragment extends Fragment {
 
     public static final String TITLE = "Awards";
 

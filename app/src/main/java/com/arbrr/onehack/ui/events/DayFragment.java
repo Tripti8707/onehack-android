@@ -40,6 +40,7 @@ public class DayFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
+        setIndexes();
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
