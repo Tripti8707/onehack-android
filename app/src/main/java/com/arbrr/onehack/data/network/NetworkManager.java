@@ -3,13 +3,7 @@ package com.arbrr.onehack.data.network;
 import android.hardware.camera2.params.RggbChannelVector;
 import android.util.Log;
 
-import com.arbrr.onehack.data.model.Announcement;
-import com.arbrr.onehack.data.model.Event;
-import com.arbrr.onehack.data.model.Hackathon;
-import com.arbrr.onehack.data.model.HackerRole;
-import com.arbrr.onehack.data.model.Location;
-import com.arbrr.onehack.data.model.ModelObject;
-import com.arbrr.onehack.data.model.User;
+import com.arbrr.onehack.data.model.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -443,6 +437,38 @@ public class NetworkManager {
             @Override
             public void failure(RetrofitError retrofitError) {
                 Log.d(tag, "Couldn't update the hacker role");
+                callback.failure(retrofitError);
+            }
+        });
+    }
+
+    public void getAwards(final OneHackCallback<List<Award>> callback) {
+        networkSerivce.getAwards(currentHackathonId, new Callback<List<Award>>() {
+            @Override
+            public void success(List<Award> awards, Response response) {
+                Log.d(tag, "Successfully got " + awards.size() + " awards");
+                callback.success(awards);
+            }
+
+            @Override
+            public void failure(RetrofitError retrofitError) {
+                Log.d(tag, "Couldn't get the awards");
+                callback.failure(retrofitError);
+            }
+        });
+    }
+
+    public void createAward(Award award, final OneHackCallback<Award> callback) {
+        networkSerivce.createAward(apiToken, currentHackathonId, award, new Callback<Award>() {
+            @Override
+            public void success(Award award, Response response) {
+                Log.d(tag, "Successfully created the award");
+                callback.success(award);
+            }
+
+            @Override
+            public void failure(RetrofitError retrofitError) {
+                Log.d(tag, "Couldn't create the award");
                 callback.failure(retrofitError);
             }
         });
