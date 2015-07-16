@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.arbrr.onehack.R;
 import com.arbrr.onehack.data.model.Announcement;
+import com.arbrr.onehack.data.model.Hackathon;
 import com.arbrr.onehack.data.model.User;
 import com.arbrr.onehack.data.network.GenericResponse;
 import com.arbrr.onehack.data.network.NetworkManager;
@@ -52,6 +53,19 @@ public class AnnouncementsFragment extends Fragment {
     }
 
     private void getAnnouncements() {
+        if(mNetworkManager.isUserHacker()) {
+            Log.d(tag, "HEY THE USER IS A HACKER");
+        }
+        if(mNetworkManager.isUserOrganizer()) {
+            Log.d(tag, "HEY THE USER IS AN ORGANIZER");
+        }
+        if(mNetworkManager.isUserSponsor()) {
+            Log.d(tag, "HEY THE USER IS A SPONSOR");
+        }
+        if(mNetworkManager.isUserVolunteer()) {
+            Log.d(tag, "HEY THE USER IS A VOLUNTEER");
+        }
+
         mNetworkManager.getAnnouncements(new OneHackCallback<List<Announcement>>() {
             @Override
             public void success(List<Announcement> announcements) {

@@ -32,6 +32,9 @@ public interface OneHackNetworkService {
     @GET("/hackathons")
     void getHackathons(@Header("Authorization") String token, Callback<List<Hackathon>> callback);
 
+    @GET("/hackathons/attending")
+    void getAttendingHackathons(@Header("Authorization") String token, Callback<List<Hackathon>> callback);
+
     @GET("/hackathons/{hackathon_id}")
     void getHackathon(@Header("Authorization") String token, @Path("hackathon_id") int hackathon_id, Callback<Hackathon> callback);
 
