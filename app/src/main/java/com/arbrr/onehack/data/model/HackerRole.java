@@ -8,6 +8,39 @@ public class HackerRole extends ModelObject {
     public int hackathon_id;
     public int role;
 
+    public enum Role {
+        HACKER(1),
+        ORGANIZER(2),
+        SPONSOR(4),
+        VOLUNTEER(8);
+
+        private int bitMask;
+
+        Role(int bitMask) {
+            this.bitMask = bitMask;
+        }
+
+        boolean isRoleSelf(int role) {
+            return ((role & bitMask) == bitMask);
+        }
+    }
+
+    public boolean isHacker() {
+        return Role.HACKER.isRoleSelf(role);
+    }
+
+    public boolean isOrganizer() {
+        return Role.ORGANIZER.isRoleSelf(role);
+    }
+
+    public boolean isSponsor() {
+        return Role.SPONSOR.isRoleSelf(role);
+    }
+
+    public boolean isVolunteer() {
+        return Role.VOLUNTEER.isRoleSelf(role);
+    }
+
     public int getUser_id() {
         return user_id;
     }
