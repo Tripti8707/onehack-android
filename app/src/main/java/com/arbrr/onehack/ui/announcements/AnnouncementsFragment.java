@@ -1,10 +1,12 @@
 package com.arbrr.onehack.ui.announcements;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,11 +15,13 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.arbrr.onehack.R;
 import com.arbrr.onehack.data.model.Announcement;
@@ -37,9 +41,6 @@ import java.util.List;
  * Created by Omkar Moghe on 5/27/15
  */
 public class AnnouncementsFragment extends Fragment {
-
-    public static final String TITLE = "Announcements";
-
     private static final String tag = "ONEHACK-AF";
 
     private NetworkManager mNetworkManager;
@@ -52,11 +53,12 @@ public class AnnouncementsFragment extends Fragment {
     }
 
     private void getAnnouncements() {
+        final Context context = this.getActivity().getApplicationContext();
         mNetworkManager.getAnnouncements(new OneHackCallback<List<Announcement>>() {
             @Override
             public void success(List<Announcement> announcements) {
                 // instantiate adapter
-                mAdapter = new MyAdapter(announcements);
+                mAdapter = new MyAdapter(announcements, context);
                 mRecyclerView.setAdapter(mAdapter);
             }
 
@@ -92,6 +94,7 @@ public class AnnouncementsFragment extends Fragment {
 
         //log user in - just temporary code until full app is ready
         mNetworkManager = NetworkManager.getInstance();
+        getAnnouncements();
         mNetworkManager.logUserIn("tom_erdmann@mac.com", "test", new OneHackCallback<User>() {
             @Override
             public void success(User response) {
@@ -122,7 +125,7 @@ public class AnnouncementsFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_compose:
                 //switch to NewAnnouncement Fragment
-                FragmentManager fragmentManager = getActivity().getFragmentManager();
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 NewAnnouncementFragment newAnnouncementFragment = new NewAnnouncementFragment();
                 fragmentTransaction.replace(R.id.main_fragment_container, newAnnouncementFragment);
@@ -136,15 +139,21 @@ public class AnnouncementsFragment extends Fragment {
 
     public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         private List<Announcement> announcements;
+        private Context context;
 
         //Container class for all the views in each "item" of the RecyclerView
-        public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, Animation.AnimationListener {
+        public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, Animation.AnimationListener, View.OnTouchListener {
             private CardView cv;
             private TextView titleView;
             private TextView messageView;
             private TextView dateView;
             private TextView deleteView;
             private boolean isSlided;
+
+            float x1 = 0;
+            float y1 = 0;
+            float x2 = 0;
+            float y2 = 0;
 
             public ViewHolder(View v) {
                 super(v);
@@ -154,12 +163,13 @@ public class AnnouncementsFragment extends Fragment {
                 dateView = (TextView) itemView.findViewById(R.id.announcement_date);
                 deleteView = (TextView) itemView.findViewById(R.id.announcement_delete);
 
-                cv.setOnClickListener(this);
+                //cv.setOnClickListener(this);
+                cv.setOnTouchListener(this);
                 deleteView.setOnClickListener(this);
 
                 //CardView's work differently on pre-Lollipop devices. They use padding to create
-                //shoadow. Thus, on pre-L devices use margins to negate the padding. Otherwise
-                //wierd gaps appear between the cards
+                //shadow. Thus, on pre-L devices use margins to negate the padding. Otherwise
+                //weird gaps appear between the cards
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
                     ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) cv.getLayoutParams();
                     mlp.topMargin -= (int)(cv.getMaxCardElevation() * 1.5 + (1 - Math.cos(Math.PI / 4)) * cv.getRadius());
@@ -172,42 +182,69 @@ public class AnnouncementsFragment extends Fragment {
             }
 
             @Override
+            public boolean onTouch(View v, MotionEvent event){
+                int action = MotionEventCompat.getActionMasked(event);
+
+                switch(action) {
+                    case (MotionEvent.ACTION_DOWN) :
+                        x1 = event.getX();
+                        y1 = event.getY();
+                        break;
+                    case (MotionEvent.ACTION_MOVE) :
+                        return true;
+                    case (MotionEvent.ACTION_UP) :
+                        x2 = event.getX();
+                        y2 = event.getY();
+
+                        //swipe right - return the card to its original position only if it was slided
+                        //over in the first place
+                        if(x1 < x2 && isSlided){
+                            TranslateAnimation slideOver = new TranslateAnimation(0, deleteView.getWidth(), 0, 0);
+                            slideOver.setDuration(800);
+                            slideOver.setFillAfter(true);
+                            slideOver.setAnimationListener(this);
+                            cv.startAnimation(slideOver);
+                        }
+                        //swipe left - slide the card over only if it wasn't slided over already
+                        else if (x2 < x1 && !isSlided){
+                            TranslateAnimation slideOver = new TranslateAnimation(0, -deleteView.getWidth(), 0, 0);
+                            slideOver.setDuration(800);
+                            slideOver.setFillAfter(true);
+                            slideOver.setAnimationListener(this);
+                            cv.startAnimation(slideOver);
+                        }
+
+                        x1 = 0;
+                        x2 = 0;
+
+                        return true;
+                    case (MotionEvent.ACTION_CANCEL) :
+                        return true;
+                    default :
+                        return getActivity().onTouchEvent(event);
+                }
+
+                return true;
+            }
+
+            @Override
             public void onClick(View v) {
-                if (!isSlided) {
-                    //slide over the announcement to reveal a delete button
-                    TranslateAnimation slideOver = new TranslateAnimation(0, -deleteView.getWidth(), 0, 0);
-                    slideOver.setDuration(800);
-                    slideOver.setFillAfter(true);
-                    slideOver.setAnimationListener(this);
-                    cv.startAnimation(slideOver);
-                }
-                else {
-                    if (v.getId() == R.id.announcement_card) {
-                        //slide back the announcement covering up the delete button
-                        TranslateAnimation slideOver = new TranslateAnimation(0, deleteView.getWidth(), 0, 0);
-                        slideOver.setDuration(800);
-                        slideOver.setFillAfter(true);
-                        slideOver.setAnimationListener(this);
-                        cv.startAnimation(slideOver);
+                //delete the announcement
+                mNetworkManager.deleteAnnouncement(mAdapter.getAnnouncementAt(this.getAdapterPosition()), new OneHackCallback<GenericResponse>() {
+                    @Override
+                    public void success(GenericResponse response) {
+                        Log.d(tag, "Successfully deleted announcmenet!");
                     }
-                    if (v.getId() == R.id.announcement_delete) {
-                        //delete the announcement
-                        mNetworkManager.deleteAnnouncement(mAdapter.getAnnouncementAt(this.getAdapterPosition()), new OneHackCallback<GenericResponse>() {
-                            @Override
-                            public void success(GenericResponse response) {
-                                Log.d(tag, "Successfully deleted announcmenet!");
-                            }
 
-                            @Override
-                            public void failure(Throwable error) {
-                                Log.d(tag, "Could not delete announcmenet ");
-                            }
-                        });
-
-                        mAdapter.deleteAnnouncementAt(this.getAdapterPosition());
-                        mAdapter.notifyDataSetChanged(); //refresh recyler view
+                    @Override
+                    public void failure(Throwable error) {
+                        Log.d(tag, "Could not delete announcmenet ");
+                        Toast.makeText(context, R.string.delete_announcement_failure, Toast.LENGTH_SHORT).show();
                     }
-                }
+                });
+
+                mAdapter.deleteAnnouncementAt(this.getAdapterPosition());
+                mAdapter.notifyDataSetChanged(); //refresh recyler view
             }
 
 
@@ -254,8 +291,9 @@ public class AnnouncementsFragment extends Fragment {
             }
         }
 
-        public MyAdapter(List<Announcement> announcementsIn) {
+        public MyAdapter(List<Announcement> announcementsIn, Context contextIn) {
             announcements = new ArrayList<Announcement>(announcementsIn);
+            context = contextIn;
         }
 
         public Announcement getAnnouncementAt(int position){
