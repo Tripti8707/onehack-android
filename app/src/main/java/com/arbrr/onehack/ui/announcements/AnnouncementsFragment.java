@@ -54,6 +54,21 @@ public class AnnouncementsFragment extends Fragment {
 
     private void getAnnouncements() {
         final Context context = this.getActivity().getApplicationContext();
+
+        //checking user role stuff
+        if(mNetworkManager.isUserHacker()) {
+            Log.d(tag, "HEY THE USER IS A HACKER");
+        }
+        if(mNetworkManager.isUserOrganizer()) {
+            Log.d(tag, "HEY THE USER IS AN ORGANIZER");
+        }
+        if(mNetworkManager.isUserSponsor()) {
+            Log.d(tag, "HEY THE USER IS A SPONSOR");
+        }
+        if(mNetworkManager.isUserVolunteer()) {
+            Log.d(tag, "HEY THE USER IS A VOLUNTEER");
+        }
+
         mNetworkManager.getAnnouncements(new OneHackCallback<List<Announcement>>() {
             @Override
             public void success(List<Announcement> announcements) {

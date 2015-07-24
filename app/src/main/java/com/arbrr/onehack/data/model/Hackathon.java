@@ -1,6 +1,7 @@
 package com.arbrr.onehack.data.model;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by boztalay on 6/3/15.
@@ -12,6 +13,36 @@ public class Hackathon extends ModelObject {
     public Date endTime;
     public String logoUrl;
     public String hexColor;
+    public List<HackerRole> hacker_roles;
+
+    public boolean isUserHacker(User user) {
+        HackerRole hackerRole = getHackerRole();
+        return hackerRole.isHacker();
+    }
+
+    public boolean isUserOrganizer(User user) {
+        HackerRole hackerRole = getHackerRole();
+        return hackerRole.isOrganizer();
+    }
+
+    public boolean isUserSponsor(User user) {
+        HackerRole hackerRole = getHackerRole();
+        return hackerRole.isSponsor();
+    }
+
+    public boolean isUserVolunteer(User user) {
+        HackerRole hackerRole = getHackerRole();
+        return hackerRole.isVolunteer();
+    }
+
+    public HackerRole getHackerRole() {
+        if(hacker_roles.size() <= 0) {
+            // This should never happen
+            throw new RuntimeException("A hackathon was asked for its user role but didn't have any!");
+        }
+
+        return hacker_roles.get(0);
+    }
 
     public String getHexColor() {
         return hexColor;
@@ -59,5 +90,9 @@ public class Hackathon extends ModelObject {
 
     public void setLogoUrl(String logoUrl) {
         this.logoUrl = logoUrl;
+    }
+
+    public List<HackerRole> getHackerRoles() {
+        return hacker_roles;
     }
 }

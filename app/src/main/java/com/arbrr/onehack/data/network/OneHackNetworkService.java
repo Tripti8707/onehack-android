@@ -1,12 +1,6 @@
 package com.arbrr.onehack.data.network;
 
-import com.arbrr.onehack.data.model.Announcement;
-import com.arbrr.onehack.data.model.Event;
-import com.arbrr.onehack.data.model.Hackathon;
-import com.arbrr.onehack.data.model.HackerRole;
-import com.arbrr.onehack.data.model.Location;
-import com.arbrr.onehack.data.model.ModelObject;
-import com.arbrr.onehack.data.model.User;
+import com.arbrr.onehack.data.model.*;
 
 import java.util.List;
 
@@ -37,6 +31,9 @@ public interface OneHackNetworkService {
 
     @GET("/hackathons")
     void getHackathons(@Header("Authorization") String token, Callback<List<Hackathon>> callback);
+
+    @GET("/hackathons/attending")
+    void getAttendingHackathons(@Header("Authorization") String token, Callback<List<Hackathon>> callback);
 
     @GET("/hackathons/{hackathon_id}")
     void getHackathon(@Header("Authorization") String token, @Path("hackathon_id") int hackathon_id, Callback<Hackathon> callback);
@@ -85,4 +82,10 @@ public interface OneHackNetworkService {
 
     @PUT("/hacker_roles/{hacker_role_id}")
     void updateHackerRole(@Header("Authorization") String token, @Path("hacker_role_id") int hacker_role_id, @Body HackerRole hackerRole, Callback<HackerRole> callback);
+
+    @GET("/hackathons/{hackathon_id}/awards")
+    void getAwards(@Path("hackathon_id") int hackathon_id, Callback<List<Award>> callback);
+
+    @POST("/hackathons/{hackathon_id}/awards")
+    void createAward(@Header("Authorization") String token, @Path("hackathon_id") int hackathon_id, @Body Award award, Callback<Award> callback);
 }
