@@ -9,12 +9,9 @@ import android.widget.TextView;
 import com.arbrr.onehack.R;
 import com.arbrr.onehack.data.model.Event;
 import com.arbrr.onehack.data.model.Location;
-import com.arbrr.onehack.data.network.NetworkManager;
-import com.arbrr.onehack.data.network.OneHackCallback;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 /**
  * Created by Omkar Moghe on 7/24/2015.
@@ -57,6 +54,7 @@ public class EventsRecyclerAdapter extends RecyclerView.Adapter<EventsRecyclerAd
         holder.eventName.setText(e.getName());
         holder.eventTime.setText(timeFrame);
         holder.eventInfo.setText(e.getInfo());
+        // If location is null, no matching Location was found for the ID provided in the Event
         if (location == null) holder.eventLocation.setText("Location to be determined.");
         else holder.eventLocation.setText(location.getName());
     }

@@ -4,7 +4,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import com.arbrr.onehack.data.model.Event;
+
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * Created by Omkar Moghe on 7/12/2015.
@@ -31,6 +35,23 @@ public class DayPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return "Day " + (position + 1);
+        String pageTitle = "Day " + (position + 1);
+
+        if (EventsManager.buildIndexes() != null) {
+            ArrayList<ArrayList<Integer>> indexes = EventsManager.buildIndexes();
+            if (position >= 0 && position < indexes.size()) {
+                int eventPosition = indexes.get(position).get(0);
+                Event e = EventsManager.getEvents().get(eventPosition);
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(e.getStartTime());
+
+                String month = calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US);
+                int date = calendar.get(Calendar.DATE);
+
+                pageTitle = month + " " + date;
+            }
+        }
+
+        return pageTitle;
     }
 }
