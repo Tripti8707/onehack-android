@@ -57,7 +57,7 @@ public class MainActivity extends ActionBarActivity {
         awardsFragment = new AwardsFragment();
 
         // Inflate AnnouncementsFragment
-        updateFragment(announcementsFragment);
+        updateFragment(announcementsFragment, announcementsFragment.TITLE);
 
         // Navigation Drawer set up
         mNavTitles = getResources().getStringArray(R.array.nav_titles);
@@ -100,16 +100,16 @@ public class MainActivity extends ActionBarActivity {
     private void selectFragment(int position) {
         switch (position) {
             case 0:
-                updateFragment(announcementsFragment);
+                updateFragment(announcementsFragment, mNavTitles[position]);
                 break;
             case 1:
-                updateFragment(eventsFragment);
+                updateFragment(eventsFragment, mNavTitles[position]);
                 break;
             case 2:
-                updateFragment(contactsFragment);
+                updateFragment(contactsFragment, mNavTitles[position]);
                 break;
             case 3:
-                updateFragment(awardsFragment);
+                updateFragment(awardsFragment, mNavTitles[position]);
                 break;
         }
 
@@ -124,11 +124,11 @@ public class MainActivity extends ActionBarActivity {
      * Updates the main_fragment_container with the given fragment.
      * @param fragment fragment to replace the main container with
      */
-    private void updateFragment(Fragment fragment) {
+    private void updateFragment(Fragment fragment, String title) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.main_fragment_container, fragment);
-        fragmentTransaction.addToBackStack(null); // for back button navigation
+        fragmentTransaction.addToBackStack(title); // for back button navigation
         fragmentTransaction.commit();
     }
 
@@ -145,8 +145,11 @@ public class MainActivity extends ActionBarActivity {
     public void onBackPressed() {
         if(mDrawerLayout.isDrawerOpen(mNavDrawerList)) {
             mDrawerLayout.closeDrawer(mNavDrawerList); // close nav drawer if open
-        } else if(getFragmentManager().getBackStackEntryCount() > 0) {
-            getFragmentManager().popBackStack(); // otherwise pop fragment back stack
+        } else if(getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            String title = getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1)
+                                                      .getName();
+            getSupportFragmentManager().popBackStack(); // otherwise pop fragment back stack
+            setTitle(title);
         } else {
             super.onBackPressed(); // let the android overlords handle that shit
         }

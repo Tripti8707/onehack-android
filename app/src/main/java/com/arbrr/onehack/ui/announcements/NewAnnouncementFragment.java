@@ -34,6 +34,9 @@ import java.util.Date;
  * Created by Nilay on 6/2/15.
  */
 public class NewAnnouncementFragment extends Fragment implements View.OnClickListener{
+
+    public static final String TITLE = "New Announcement";
+
     private static final String tag = "ONEHACK-AF";
 
     //request codes for intents
