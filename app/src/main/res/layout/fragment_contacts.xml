@@ -1,9 +1,13 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:orientation="vertical"
     android:layout_height="match_parent" tools:context="com.arbrr.onehack.ui.contacts.ContactsFragment">
+
+    <!-- Toolbar shadow because fuck you elevation and tab strips -->
+    <include layout="@layout/toolbar_shadow"/>
 
     <!-- TODO: Update blank fragment layout -->
     <TextView android:layout_width="match_parent" android:layout_height="match_parent"
         android:text="ContactsFragment" />
 
-</FrameLayout>
+</LinearLayout>

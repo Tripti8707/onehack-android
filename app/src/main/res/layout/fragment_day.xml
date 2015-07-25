@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:id="@+id/events_recycler_view" />
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- Toolbar shadow because fuck you elevation and tab strips -->
+    <include layout="@layout/toolbar_shadow"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:id="@+id/events_recycler_view" />
+
+</LinearLayout>
