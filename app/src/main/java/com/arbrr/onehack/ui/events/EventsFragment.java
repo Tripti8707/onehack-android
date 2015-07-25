@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import com.arbrr.onehack.R;
 import com.arbrr.onehack.data.model.Event;
+import com.arbrr.onehack.data.model.Location;
 import com.arbrr.onehack.data.model.User;
 import com.arbrr.onehack.data.network.NetworkManager;
 import com.arbrr.onehack.data.network.OneHackCallback;
@@ -62,6 +63,8 @@ public class EventsFragment extends Fragment {
             public void success(User response) {
                 Log.d(TAG, "successfully logged in...");
                 getEvents();
+                getLocations();
+                mProgressDialog.dismiss();
             }
 
             @Override
@@ -93,11 +96,24 @@ public class EventsFragment extends Fragment {
         });
     }
 
+    public void getLocations() {
+        networkManager.getLocations(new OneHackCallback<List<Location>>() {
+            @Override
+            public void success(List<Location> response) {
+                LocationsManager.setLocations(response);
+            }
+
+            @Override
+            public void failure(Throwable error) {
+
+            }
+        });
+    }
+
     private void updateEventsManager (List<Event> update) {
         EventsManager.setEvents(update);
         indexMap = EventsManager.buildIndexes();
         mDayPagerAdapter.notifyDataSetChanged();
-        mProgressDialog.dismiss();
     }
 
     private void showProgressDialog (String title, String message) {
