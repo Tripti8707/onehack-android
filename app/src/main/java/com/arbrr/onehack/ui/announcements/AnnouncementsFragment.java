@@ -25,7 +25,6 @@ import android.widget.Toast;
 
 import com.arbrr.onehack.R;
 import com.arbrr.onehack.data.model.Announcement;
-import com.arbrr.onehack.data.model.User;
 import com.arbrr.onehack.data.network.GenericResponse;
 import com.arbrr.onehack.data.network.NetworkManager;
 import com.arbrr.onehack.data.network.OneHackCallback;
@@ -56,18 +55,18 @@ public class AnnouncementsFragment extends Fragment {
         final Context context = this.getActivity().getApplicationContext();
 
         //checking user role stuff
-        if(mNetworkManager.isUserHacker()) {
-            Log.d(tag, "HEY THE USER IS A HACKER");
-        }
-        if(mNetworkManager.isUserOrganizer()) {
-            Log.d(tag, "HEY THE USER IS AN ORGANIZER");
-        }
-        if(mNetworkManager.isUserSponsor()) {
-            Log.d(tag, "HEY THE USER IS A SPONSOR");
-        }
-        if(mNetworkManager.isUserVolunteer()) {
-            Log.d(tag, "HEY THE USER IS A VOLUNTEER");
-        }
+//        if(mNetworkManager.isUserHacker()) {
+//            Log.d(tag, "HEY THE USER IS A HACKER");
+//        }
+//        if(mNetworkManager.isUserOrganizer()) {
+//            Log.d(tag, "HEY THE USER IS AN ORGANIZER");
+//        }
+//        if(mNetworkManager.isUserSponsor()) {
+//            Log.d(tag, "HEY THE USER IS A SPONSOR");
+//        }
+//        if(mNetworkManager.isUserVolunteer()) {
+//            Log.d(tag, "HEY THE USER IS A VOLUNTEER");
+//        }
 
         mNetworkManager.getAnnouncements(new OneHackCallback<List<Announcement>>() {
             @Override
@@ -109,19 +108,19 @@ public class AnnouncementsFragment extends Fragment {
 
         //log user in - just temporary code until full app is ready
         mNetworkManager = NetworkManager.getInstance();
-        getAnnouncements();
-        mNetworkManager.logUserIn("tom_erdmann@mac.com", "test", new OneHackCallback<User>() {
-            @Override
-            public void success(User response) {
-                Log.d(tag, "Logged in!");
-                getAnnouncements();
-            }
 
-            @Override
-            public void failure(Throwable error) {
-                Log.d(tag, "Couldn't log in :(");
-            }
-        });
+//        mNetworkManager.logUserIn("tom_erdmann@mac.com", "test", new OneHackCallback<User>() {
+//            @Override
+//            public void success(User response) {
+//                Log.d(tag, "Logged in!");
+//                getAnnouncements();
+//            }
+//
+//            @Override
+//            public void failure(Throwable error) {
+//                Log.d(tag, "Couldn't log in :(");
+//            }
+//        });
 
         setHasOptionsMenu(true);
 

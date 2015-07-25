@@ -24,7 +24,6 @@ import android.widget.Toast;
 
 import com.arbrr.onehack.R;
 import com.arbrr.onehack.data.model.Announcement;
-import com.arbrr.onehack.data.model.User;
 import com.arbrr.onehack.data.network.NetworkManager;
 import com.arbrr.onehack.data.network.OneHackCallback;
 import com.arbrr.onehack.ui.MainActivity;
@@ -74,20 +73,19 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
         addPictureButton.setOnClickListener(this);
         imageView = (ImageView) view.findViewById(R.id.new_announcement_image);
 
-        mNetworkManager = NetworkManager.getInstance();
 //        //log user in - just temporary code until full app is ready
         mNetworkManager = NetworkManager.getInstance();
-        mNetworkManager.logUserIn("admin@admin.com", "admin", new OneHackCallback<User>() {
-            @Override
-            public void success(User response) {
-                Log.d(tag, "Logged in!");
-            }
-
-            @Override
-            public void failure(Throwable error) {
-                Log.d(tag, "Couldn't log in :(");
-            }
-        });
+//        mNetworkManager.logUserIn("tom_erdmann@mac.com", "test", new OneHackCallback<User>() {
+//            @Override
+//            public void success(User response) {
+//                Log.d(tag, "Logged in!");
+//            }
+//
+//            @Override
+//            public void failure(Throwable error) {
+//                Log.d(tag, "Couldn't log in :(");
+//            }
+//        });
 
         setHasOptionsMenu(true);
 
