@@ -62,14 +62,15 @@ public class EventsFragment extends Fragment {
             @Override
             public void success(User response) {
                 Log.d(TAG, "successfully logged in...");
-                getEvents();
+
                 getLocations();
+                getEvents();
+
                 mProgressDialog.dismiss();
             }
 
             @Override
             public void failure(Throwable error) {
-
             }
         });
 
@@ -86,7 +87,8 @@ public class EventsFragment extends Fragment {
         networkManager.getEvents(new OneHackCallback<List<Event>>() {
             @Override
             public void success(List<Event> response) {
-                updateEventsManager(response);
+                EventsManager.setEvents(response);
+                updateIndexesAndViews();
             }
 
             @Override
@@ -110,10 +112,10 @@ public class EventsFragment extends Fragment {
         });
     }
 
-    private void updateEventsManager (List<Event> update) {
-        EventsManager.setEvents(update);
+    private void updateIndexesAndViews() {
         indexMap = EventsManager.buildIndexes();
         mDayPagerAdapter.notifyDataSetChanged();
+        mEventsViewPager.setAdapter(mDayPagerAdapter);
     }
 
     private void showProgressDialog (String title, String message) {
