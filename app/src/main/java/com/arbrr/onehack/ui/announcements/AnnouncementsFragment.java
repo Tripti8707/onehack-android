@@ -76,7 +76,7 @@ public class AnnouncementsFragment extends Fragment {
 
             @Override
             public void failure(Throwable error) {
-                Log.d(tag, ":(");
+                Log.e(tag, ":(", error);
             }
         });
     }

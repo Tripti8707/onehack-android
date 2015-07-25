@@ -31,6 +31,6 @@ public class DayPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return "test";
+        return "Day " + (position + 1);
     }
 }

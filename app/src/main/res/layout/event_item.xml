@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:padding="3dp">
+
+    <LinearLayout android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:background="@color/white">
+
+        <FrameLayout android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:id="@+id/event_name"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_gravity="start"
+                android:layout_margin="3dp"/>
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:id="@+id/event_time"
+                android:textStyle="bold"
+                android:textColor="@color/announcement_gray"
+                android:layout_gravity="end"
+                android:layout_margin="3dp"/>
+
+        </FrameLayout>
+
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
+            android:id="@+id/event_info"
+            android:textColor="@color/announcement_gray"
+            android:layout_margin="3dp"/>
+
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content"
+            android:id="@+id/event_location"
+            android:textStyle="italic"
+            android:textColor="@color/announcement_gray"
+            android:layout_margin="3dp"
+            android:text="Location to be determined."/>
+
+    </LinearLayout>
+
+</FrameLayout>
