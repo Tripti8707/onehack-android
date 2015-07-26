@@ -27,7 +27,7 @@ public class ContactsFragment extends Fragment {
     private static final String LOGTAG = "MD/ContactsFragment";
 
     List<User> allUsers;
-    NetworkManager networkManager;
+    NetworkManager mNetworkManager;
 
     // ListView in which to display all the contacts
     ListView mContactsListView;
@@ -70,8 +70,8 @@ public class ContactsFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         // Test: Getting the Network Manager to give some User info
-        networkManager = NetworkManager.getInstance();
-        networkManager.logUserIn("admin@admin.com", "admin", new OneHackCallback<User>() {
+        mNetworkManager = NetworkManager.getInstance();
+        mNetworkManager.logUserIn("tom_erdmann@mac.com", "test", new OneHackCallback<User>() {
             @Override
             public void success(User response) {
                 Log.d(LOGTAG, "Logged in!");
@@ -86,7 +86,7 @@ public class ContactsFragment extends Fragment {
     }
 
     private void getData() {
-        networkManager.getContacts(new OneHackCallback<List<User>>() {
+        mNetworkManager.getContacts(new OneHackCallback<List<User>>() {
             @Override
             public void success(List<User> response) {
                 // Response should be the list of users
