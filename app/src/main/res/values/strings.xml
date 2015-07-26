@@ -26,7 +26,8 @@
     <string name="announcement_choose_photo">Choose Photo</string>
     <string name="new_announcement_dialog_title">Select Method</string>
 
-
+    <!-- Contacts Strings -->
+    <string name="contacts_search_title">Search for Contacts</string>
 
 <!-- TODO: Remove or change this placeholder text -->
 

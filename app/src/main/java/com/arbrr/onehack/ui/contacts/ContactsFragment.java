@@ -5,6 +5,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -53,6 +55,9 @@ public class ContactsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_contacts, container, false);
 
+        // Set this fragment to handle options/actionbar/toolbar menu actions (ie, search)
+        setHasOptionsMenu(true);
+
         // Cache the listView to set it up later
         mContactsListView = (ListView) view.findViewById(R.id.contactsList);
 
@@ -83,6 +88,12 @@ public class ContactsFragment extends Fragment {
                 Log.d(LOGTAG, "Couldn't log in :(");
             }
         });
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Create the menu items for use in the action bar (specifically for searching)
+        inflater.inflate(R.menu.menu_contacts, menu);
     }
 
     private void getData() {
