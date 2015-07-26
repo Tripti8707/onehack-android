@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="event_action_options">
+        <item>Show on map</item>
+        <item>Edit this event</item>
+        <item>Delete this event</item>
+    </string-array>
+</resources>

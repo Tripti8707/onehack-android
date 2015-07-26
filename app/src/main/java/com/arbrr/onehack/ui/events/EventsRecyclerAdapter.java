@@ -4,6 +4,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.arbrr.onehack.R;
@@ -20,8 +22,11 @@ public class EventsRecyclerAdapter extends RecyclerView.Adapter<EventsRecyclerAd
 
     private ArrayList<Event> mEvents;
 
-    public EventsRecyclerAdapter (ArrayList<Event> events) {
+    private DayFragment mListener;
+
+    public EventsRecyclerAdapter (ArrayList<Event> events, DayFragment listener) {
         mEvents = events;
+        mListener = listener;
     }
 
     @Override
@@ -57,6 +62,10 @@ public class EventsRecyclerAdapter extends RecyclerView.Adapter<EventsRecyclerAd
         // If location is null, no matching Location was found for the ID provided in the Event
         if (location == null) holder.eventLocation.setText("Location to be determined.");
         else holder.eventLocation.setText(location.getName());
+
+        // Add click listeners
+        holder.eventItemContainer.setOnClickListener(mListener);
+        holder.eventItemContainer.setOnLongClickListener(mListener);
     }
 
     @Override
@@ -66,6 +75,7 @@ public class EventsRecyclerAdapter extends RecyclerView.Adapter<EventsRecyclerAd
 
     public static class EventsHolder extends RecyclerView.ViewHolder {
         protected TextView eventName, eventTime, eventInfo, eventLocation;
+        protected FrameLayout eventItemContainer;
 
         public EventsHolder(View itemView) {
             super(itemView);
@@ -73,6 +83,7 @@ public class EventsRecyclerAdapter extends RecyclerView.Adapter<EventsRecyclerAd
             this.eventTime = (TextView) itemView.findViewById(R.id.event_time);
             this.eventInfo = (TextView) itemView.findViewById(R.id.event_info);
             this.eventLocation = (TextView) itemView.findViewById(R.id.event_location);
+            this.eventItemContainer = (FrameLayout) itemView.findViewById(R.id.event_item_container);
         }
     }
 }
