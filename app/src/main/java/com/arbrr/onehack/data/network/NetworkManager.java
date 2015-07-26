@@ -7,13 +7,9 @@ import com.arbrr.onehack.data.model.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import retrofit.Callback;
-import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -26,12 +22,13 @@ public class NetworkManager {
     private static final String tag = "ONEHACK-NM";
     private static final String baseUrl = "http://onehack-mhacks.herokuapp.com/v1";
 
-    private static final int DEFAULT_HACKATHON_ID = 1;
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     private OneHackNetworkService networkSerivce;
     private String apiToken;
-    private int currentHackathonId;
+    private ArrayList<Hackathon> hackathonsAttending;
+    private Hackathon currentHackathon;
+    private User currentUser;
 
     private static NetworkManager instance;
 
@@ -44,8 +41,6 @@ public class NetworkManager {
     }
 
     public NetworkManager() {
-        currentHackathonId = getHackathonId();
-
         Gson gson = new GsonBuilder()
                 .setDateFormat(DATE_FORMAT)
                 .create();
@@ -57,6 +52,8 @@ public class NetworkManager {
                 .build();
 
         this.networkSerivce = restAdapter.create(OneHackNetworkService.class);
+
+        hackathonsAttending = new ArrayList<Hackathon>();
     }
 
     public void logUserIn(String email, String password, final OneHackCallback<User> callback) {
@@ -69,9 +66,29 @@ public class NetworkManager {
                 // Now that we have the token, go get the user
                 networkSerivce.getCurrentUser(apiToken, new Callback<User>() {
                     @Override
-                    public void success(User user, Response response) {
+                    public void success(final User user, Response response) {
                         Log.d(tag, "Successfully got the current user");
-                        callback.success(user);
+
+                        // Finally, get all of the hackathons that the user is attending
+                        getAttendingHackathons(new OneHackCallback<List<Hackathon>>() {
+                            @Override
+                            public void success(List<Hackathon> hackathons) {
+                                Log.d(tag, "Successfully got the attending hackathons");
+
+                                currentUser = user;
+                                hackathonsAttending.clear();
+                                hackathonsAttending.addAll(hackathons);
+                                setCurrentHackathon();
+
+                                callback.success(user);
+                            }
+
+                            @Override
+                            public void failure(Throwable error) {
+                                Log.d(tag, "Failed to get the attending hackathons while logging in");
+                                callback.failure(error);
+                            }
+                        });
                     }
 
                     @Override
@@ -169,6 +186,31 @@ public class NetworkManager {
         });
     }
 
+    public void getAttendingHackathons(final OneHackCallback<List<Hackathon>> callback) {
+        networkSerivce.getAttendingHackathons(apiToken, new Callback<List<Hackathon>>() {
+            @Override
+            public void success(List<Hackathon> hackathons, Response response) {
+                Log.d(tag, "Successfully got " + hackathons.size() + " attending hackathons");
+
+                // Sorts alphabetically
+                Collections.sort(hackathons, new Comparator<Hackathon>() {
+                    @Override
+                    public int compare(Hackathon lhs, Hackathon rhs) {
+                        return lhs.getName().compareTo(rhs.getName());
+                    }
+                });
+
+                callback.success(hackathons);
+            }
+
+            @Override
+            public void failure(RetrofitError retrofitError) {
+                Log.d(tag, "Couldn't get attending hackathons");
+                callback.failure(retrofitError);
+            }
+        });
+    }
+
     public void getHackathon(int hackathonId, final OneHackCallback<Hackathon> callback) {
         networkSerivce.getHackathon(apiToken, hackathonId, new Callback<Hackathon>() {
             @Override
@@ -202,7 +244,7 @@ public class NetworkManager {
     }
 
     public void getAnnouncements(final OneHackCallback<List<Announcement>> callback) {
-        networkSerivce.getAnnouncements(currentHackathonId, new Callback<List<Announcement>>() {
+        networkSerivce.getAnnouncements(currentHackathon.getId(), new Callback<List<Announcement>>() {
             @Override
             public void success(List<Announcement> announcements, Response response) {
                 Log.d(tag, "Successfully got " + announcements.size() + " announcements");
@@ -227,7 +269,7 @@ public class NetworkManager {
     }
 
     public void getAnnouncement(int announcementId, final OneHackCallback<Announcement> callback) {
-        networkSerivce.getAnnouncement(currentHackathonId, announcementId, new Callback<Announcement>() {
+        networkSerivce.getAnnouncement(currentHackathon.getId(), announcementId, new Callback<Announcement>() {
             @Override
             public void success(Announcement announcement, Response response) {
                 Log.d(tag, "Successfully got the announcement");
@@ -243,7 +285,7 @@ public class NetworkManager {
     }
 
     public void createAnnouncement(Announcement announcement, final OneHackCallback<Announcement> callback) {
-        networkSerivce.createAnnouncement(apiToken, currentHackathonId, announcement, new Callback<Announcement>() {
+        networkSerivce.createAnnouncement(apiToken, currentHackathon.getId(), announcement, new Callback<Announcement>() {
             @Override
             public void success(Announcement announcement, Response response) {
                 Log.d(tag, "Succcessfully created the announcement");
@@ -259,7 +301,7 @@ public class NetworkManager {
     }
 
     public void deleteAnnouncement(Announcement announcement, final OneHackCallback<GenericResponse> callback) {
-        networkSerivce.deleteAnnouncement(apiToken, currentHackathonId, announcement.id, new Callback<GenericResponse>() {
+        networkSerivce.deleteAnnouncement(apiToken, currentHackathon.getId(), announcement.id, new Callback<GenericResponse>() {
             @Override
             public void success(GenericResponse genericResponse, Response response) {
                 Log.d(tag, "Successfully deleted the announcement");
@@ -275,7 +317,7 @@ public class NetworkManager {
     }
 
     public void getEvents(final OneHackCallback<List<Event>> callback) {
-        networkSerivce.getEvents(currentHackathonId, new Callback<List<Event>>() {
+        networkSerivce.getEvents(currentHackathon.getId(), new Callback<List<Event>>() {
             @Override
             public void success(List<Event> events, Response response) {
                 Log.d(tag, "Successfully got " + events.size() + " events");
@@ -300,7 +342,7 @@ public class NetworkManager {
     }
 
     public void getEvent(int eventId, final OneHackCallback<Event> callback) {
-        networkSerivce.getEvent(currentHackathonId, eventId, new Callback<Event>() {
+        networkSerivce.getEvent(currentHackathon.getId(), eventId, new Callback<Event>() {
             @Override
             public void success(Event event, Response response) {
                 Log.d(tag, "Successfully got the event");
@@ -316,7 +358,7 @@ public class NetworkManager {
     }
 
     public void createEvent(Event event, final OneHackCallback<Event> callback) {
-        networkSerivce.createEvent(apiToken, currentHackathonId, event, new Callback<Event>() {
+        networkSerivce.createEvent(apiToken, currentHackathon.getId(), event, new Callback<Event>() {
             @Override
             public void success(Event event, Response response) {
                 Log.d(tag, "Successfully created the event");
@@ -332,7 +374,7 @@ public class NetworkManager {
     }
 
     public void updateEvent(Event event, final OneHackCallback<Event> callback) {
-        networkSerivce.updateEvent(apiToken, currentHackathonId, event.id, event, new Callback<Event>() {
+        networkSerivce.updateEvent(apiToken, currentHackathon.getId(), event.id, event, new Callback<Event>() {
             @Override
             public void success(Event event, Response response) {
                 Log.d(tag, "Successfully updated the event");
@@ -348,7 +390,7 @@ public class NetworkManager {
     }
 
     public void deleteEvent(Event event, final OneHackCallback<GenericResponse> callback) {
-        networkSerivce.deleteEvent(apiToken, currentHackathonId, event.id, new Callback<GenericResponse>() {
+        networkSerivce.deleteEvent(apiToken, currentHackathon.getId(), event.id, new Callback<GenericResponse>() {
             @Override
             public void success(GenericResponse genericResponse, Response response) {
                 Log.d(tag, "Successfully deleted the event");
@@ -364,7 +406,7 @@ public class NetworkManager {
     }
 
     public void getLocations(final OneHackCallback<List<Location>> callback) {
-        networkSerivce.getLocations(currentHackathonId, new Callback<List<Location>>() {
+        networkSerivce.getLocations(currentHackathon.getId(), new Callback<List<Location>>() {
             @Override
             public void success(List<Location> locations, Response response) {
                 Log.d(tag, "Successfully got " + locations.size() + " locations");
@@ -380,7 +422,7 @@ public class NetworkManager {
     }
 
     public void createLocation(Location location, final OneHackCallback<Location> callback) {
-        networkSerivce.createLocation(apiToken, currentHackathonId, location, new Callback<Location>() {
+        networkSerivce.createLocation(apiToken, currentHackathon.getId(), location, new Callback<Location>() {
             @Override
             public void success(Location location, Response response) {
                 Log.d(tag, "Successfully created the location");
@@ -396,7 +438,7 @@ public class NetworkManager {
     }
 
     public void getContacts(final OneHackCallback<List<User>> callback) {
-        networkSerivce.getContacts(apiToken, currentHackathonId, new Callback<List<User>>() {
+        networkSerivce.getContacts(apiToken, currentHackathon.getId(), new Callback<List<User>>() {
             @Override
             public void success(List<User> users, Response response) {
                 Log.d(tag, "Successfully got " + users.size() + " contacts");
@@ -443,18 +485,71 @@ public class NetworkManager {
         });
     }
 
+    public void getAwards(final OneHackCallback<List<Award>> callback) {
+        networkSerivce.getAwards(currentHackathon.getId(), new Callback<List<Award>>() {
+            @Override
+            public void success(List<Award> awards, Response response) {
+                Log.d(tag, "Successfully got " + awards.size() + " awards");
+                callback.success(awards);
+            }
+
+            @Override
+            public void failure(RetrofitError retrofitError) {
+                Log.d(tag, "Couldn't get the awards");
+                callback.failure(retrofitError);
+            }
+        });
+    }
+
+    public void createAward(Award award, final OneHackCallback<Award> callback) {
+        networkSerivce.createAward(apiToken, currentHackathon.getId(), award, new Callback<Award>() {
+            @Override
+            public void success(Award award, Response response) {
+                Log.d(tag, "Successfully created the award");
+                callback.success(award);
+            }
+
+            @Override
+            public void failure(RetrofitError retrofitError) {
+                Log.d(tag, "Couldn't create the award");
+                callback.failure(retrofitError);
+            }
+        });
+    }
+
     //----- Helpers
 
-    public void setCurrentHackathonId(int hackathonId) {
-        currentHackathonId = hackathonId;
+    public void setCurrentHackathon() {
+        if(hackathonsAttending.size() > 0) {
+            currentHackathon = hackathonsAttending.get(0);
+        } else {
+            // TODO make this user-friendlier
+            throw new RuntimeException("This user isn't attending any hackathons!");
+        }
+    }
+
+    public Hackathon getCurrentHackathon() {
+        return currentHackathon;
+    }
+
+    public boolean isUserHacker() {
+        return currentHackathon.isUserHacker(currentUser);
+    }
+
+    public boolean isUserOrganizer() {
+        return currentHackathon.isUserOrganizer(currentUser);
+    }
+
+    public boolean isUserSponsor() {
+        return currentHackathon.isUserSponsor(currentUser);
+    }
+
+    public boolean isUserVolunteer() {
+        return currentHackathon.isUserVolunteer(currentUser);
     }
 
     // TODO all dat GCM stuff
     private String getGcmToken() {
         return "";
-    }
-
-    private int getHackathonId() {
-        return DEFAULT_HACKATHON_ID;
     }
 }

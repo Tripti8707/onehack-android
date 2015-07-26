@@ -13,7 +13,23 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
+    <!--Announcements Strings-->
+    <string name="announcements_title">Announcements</string>
+    <string name="new_announcement_title">New Announcement</string>
+    <string name="title_text">Title</string>
+    <string name="body_text">Body</string>
+    <string name="cancel_text">Cancel</string>
+    <string name="save_text">Save</string>
+    <string name="delete_text">Delete</string>
+    <string name="announcement_add_image">Add Image</string>
+    <string name="announcement_take_photo">Take Photo</string>
+    <string name="announcement_choose_photo">Choose Photo</string>
+    <string name="new_announcement_dialog_title">Select Method</string>
+
+
+
+<!-- TODO: Remove or change this placeholder text -->
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!-- NAVIGATION DRAWER TITLES -->
