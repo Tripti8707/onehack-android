@@ -40,7 +40,7 @@ import java.util.List;
  * Created by Omkar Moghe on 5/27/15
  */
 public class AnnouncementsFragment extends Fragment {
-    private static final String tag = "ONEHACK-AF";
+    private static final String tag = "Announcements";
 
     private NetworkManager mNetworkManager;
     private RecyclerView mRecyclerView;
@@ -55,18 +55,18 @@ public class AnnouncementsFragment extends Fragment {
         final Context context = this.getActivity().getApplicationContext();
 
         //checking user role stuff
-//        if(mNetworkManager.isUserHacker()) {
-//            Log.d(tag, "HEY THE USER IS A HACKER");
-//        }
-//        if(mNetworkManager.isUserOrganizer()) {
-//            Log.d(tag, "HEY THE USER IS AN ORGANIZER");
-//        }
-//        if(mNetworkManager.isUserSponsor()) {
-//            Log.d(tag, "HEY THE USER IS A SPONSOR");
-//        }
-//        if(mNetworkManager.isUserVolunteer()) {
-//            Log.d(tag, "HEY THE USER IS A VOLUNTEER");
-//        }
+        if(mNetworkManager.isUserHacker()) {
+            Log.d(tag, "HEY THE USER IS A HACKER");
+        }
+        if(mNetworkManager.isUserOrganizer()) {
+            Log.d(tag, "HEY THE USER IS AN ORGANIZER");
+        }
+        if(mNetworkManager.isUserSponsor()) {
+            Log.d(tag, "HEY THE USER IS A SPONSOR");
+        }
+        if(mNetworkManager.isUserVolunteer()) {
+            Log.d(tag, "HEY THE USER IS A VOLUNTEER");
+        }
 
         mNetworkManager.getAnnouncements(new OneHackCallback<List<Announcement>>() {
             @Override
@@ -108,7 +108,7 @@ public class AnnouncementsFragment extends Fragment {
 
         //log user in - just temporary code until full app is ready
         mNetworkManager = NetworkManager.getInstance();
-
+        getAnnouncements();
 //        mNetworkManager.logUserIn("tom_erdmann@mac.com", "test", new OneHackCallback<User>() {
 //            @Override
 //            public void success(User response) {
