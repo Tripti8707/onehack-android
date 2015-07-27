@@ -1,14 +1,14 @@
 package com.arbrr.onehack.ui.announcements;
 
 import android.app.Activity;
-import android.app.DialogFragment;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,10 +20,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.arbrr.onehack.R;
 import com.arbrr.onehack.data.model.Announcement;
-import com.arbrr.onehack.data.model.User;
 import com.arbrr.onehack.data.network.NetworkManager;
 import com.arbrr.onehack.data.network.OneHackCallback;
 import com.arbrr.onehack.ui.MainActivity;
@@ -34,7 +34,7 @@ import java.util.Date;
  * Created by Nilay on 6/2/15.
  */
 public class NewAnnouncementFragment extends Fragment implements View.OnClickListener{
-    private static final String tag = "ONEHACK-AF";
+    private static final String tag = "New Announcement";
 
     //request codes for intents
     private final static int SELECT_PICTURE_REQUEST = 1;
@@ -73,19 +73,19 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
         addPictureButton.setOnClickListener(this);
         imageView = (ImageView) view.findViewById(R.id.new_announcement_image);
 
-        //log user in - just temporary code until full app is ready
+//        //log user in - just temporary code until full app is ready
         mNetworkManager = NetworkManager.getInstance();
-        mNetworkManager.logUserIn("admin@admin.com", "admin", new OneHackCallback<User>() {
-            @Override
-            public void success(User response) {
-                Log.d(tag, "Logged in!");
-            }
-
-            @Override
-            public void failure(Throwable error) {
-                Log.d(tag, "Couldn't log in :(");
-            }
-        });
+//        mNetworkManager.logUserIn("tom_erdmann@mac.com", "test", new OneHackCallback<User>() {
+//            @Override
+//            public void success(User response) {
+//                Log.d(tag, "Logged in!");
+//            }
+//
+//            @Override
+//            public void failure(Throwable error) {
+//                Log.d(tag, "Couldn't log in :(");
+//            }
+//        });
 
         setHasOptionsMenu(true);
 
@@ -103,6 +103,8 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
         View view = getActivity().getCurrentFocus();
         InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(
                 Context.INPUT_METHOD_SERVICE);
+
+        final Context context = this.getActivity().getApplicationContext();
 
         // handle item selection
         switch (item.getItemId()) {
@@ -129,6 +131,7 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
                     @Override
                     public void failure(Throwable error) {
                         Log.d(tag, ":(");
+                        Toast.makeText(context, R.string.new_announcement_failure, Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -157,7 +160,7 @@ public class NewAnnouncementFragment extends Fragment implements View.OnClickLis
         if(v.getId() == R.id.add_picture_button){
             dialog = AddPictureDialog.newInstance();
             dialog.setTargetFragment(this, AddPictureDialog.REQUEST_CODE);
-            dialog.show(this.getFragmentManager(), "AddPictureDialog");
+            dialog.show(getActivity().getSupportFragmentManager(), "AddPictureDialog");
         }
     }
 

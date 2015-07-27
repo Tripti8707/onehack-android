@@ -26,8 +26,19 @@
     <string name="announcement_choose_photo">Choose Photo</string>
     <string name="new_announcement_dialog_title">Select Method</string>
 
+    <string name="new_announcement_failure">Couldn\'t create announcement!</string>
+    <string name="delete_announcement_failure">Couldn\'t delete the announcement!</string>
+
     <!-- Contacts Strings -->
     <string name="contacts_search_title">Search for Contacts</string>
+
+    <!--Welcome Screen Strings-->
+    <string name="login_no_account_message">Don\'t have an account set up?</string>
+    <string name="signup_first_name">First Name</string>
+    <string name="signup_last_name">Last Name</string>
+    <string name="signup_company_name">Company (Optional)</string>
+    <string name="signup">Sign Up</string>
+    <string name="login_invalid_cred">Invalid Username and Password Combination</string>
 
 <!-- TODO: Remove or change this placeholder text -->
 
