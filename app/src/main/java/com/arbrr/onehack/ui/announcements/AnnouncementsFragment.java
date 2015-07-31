@@ -40,11 +40,13 @@ import java.util.List;
  * Created by Omkar Moghe on 5/27/15
  */
 public class AnnouncementsFragment extends Fragment {
-    private static final String tag = "Announcements";
 
-    private NetworkManager mNetworkManager;
-    private RecyclerView mRecyclerView;
-    private MyAdapter mAdapter;
+    private static final String TAG   = "Announcements";
+    public static final String TITLE = "Announcements";
+
+    private NetworkManager             mNetworkManager;
+    private RecyclerView               mRecyclerView;
+    private MyAdapter                  mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
     public AnnouncementsFragment() {
@@ -55,17 +57,17 @@ public class AnnouncementsFragment extends Fragment {
         final Context context = this.getActivity().getApplicationContext();
 
         //checking user role stuff
-        if(mNetworkManager.isUserHacker()) {
-            Log.d(tag, "HEY THE USER IS A HACKER");
+        if (mNetworkManager.isUserHacker()) {
+            Log.d(TAG, "HEY THE USER IS A HACKER");
         }
-        if(mNetworkManager.isUserOrganizer()) {
-            Log.d(tag, "HEY THE USER IS AN ORGANIZER");
+        if (mNetworkManager.isUserOrganizer()) {
+            Log.d(TAG, "HEY THE USER IS AN ORGANIZER");
         }
-        if(mNetworkManager.isUserSponsor()) {
-            Log.d(tag, "HEY THE USER IS A SPONSOR");
+        if (mNetworkManager.isUserSponsor()) {
+            Log.d(TAG, "HEY THE USER IS A SPONSOR");
         }
-        if(mNetworkManager.isUserVolunteer()) {
-            Log.d(tag, "HEY THE USER IS A VOLUNTEER");
+        if (mNetworkManager.isUserVolunteer()) {
+            Log.d(TAG, "HEY THE USER IS A VOLUNTEER");
         }
 
         mNetworkManager.getAnnouncements(new OneHackCallback<List<Announcement>>() {
@@ -78,7 +80,7 @@ public class AnnouncementsFragment extends Fragment {
 
             @Override
             public void failure(Throwable error) {
-                Log.e(tag, ":(", error);
+                Log.e(TAG, ":(", error);
             }
         });
     }
@@ -112,13 +114,13 @@ public class AnnouncementsFragment extends Fragment {
 //        mNetworkManager.logUserIn("tom_erdmann@mac.com", "test", new OneHackCallback<User>() {
 //            @Override
 //            public void success(User response) {
-//                Log.d(tag, "Logged in!");
+//                Log.d(TAG, "Logged in!");
 //                getAnnouncements();
 //            }
 //
 //            @Override
 //            public void failure(Throwable error) {
-//                Log.d(tag, "Couldn't log in :(");
+//                Log.d(TAG, "Couldn't log in :(");
 //            }
 //        });
 
@@ -247,12 +249,12 @@ public class AnnouncementsFragment extends Fragment {
                 mNetworkManager.deleteAnnouncement(mAdapter.getAnnouncementAt(this.getAdapterPosition()), new OneHackCallback<GenericResponse>() {
                     @Override
                     public void success(GenericResponse response) {
-                        Log.d(tag, "Successfully deleted announcmenet!");
+                        Log.d(TAG, "Successfully deleted announcmenet!");
                     }
 
                     @Override
                     public void failure(Throwable error) {
-                        Log.d(tag, "Could not delete announcmenet ");
+                        Log.d(TAG, "Could not delete announcmenet ");
                         Toast.makeText(context, R.string.delete_announcement_failure, Toast.LENGTH_SHORT).show();
                     }
                 });

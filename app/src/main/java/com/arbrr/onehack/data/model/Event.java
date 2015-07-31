@@ -63,7 +63,7 @@ public class Event extends ModelObject {
         this.hackathon_id = hackathon_id;
     }
 
-    public int egetLocation_id() {
+    public int getLocation_id() {
         return location_id;
     }
 

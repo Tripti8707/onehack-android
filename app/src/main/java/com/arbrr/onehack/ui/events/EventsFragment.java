@@ -58,21 +58,13 @@ public class EventsFragment extends Fragment {
 
         // Log in
         networkManager = NetworkManager.getInstance();
-        networkManager.logUserIn("tom_erdmann@mac.com", "test", new OneHackCallback<User>() {
-            @Override
-            public void success(User response) {
-                Log.d(TAG, "successfully logged in...");
 
-                getLocations();
-                getEvents();
+        // Get data from the OneHack backend
+        getLocations();
+        getEvents();
 
-                mProgressDialog.dismiss();
-            }
-
-            @Override
-            public void failure(Throwable error) {
-            }
-        });
+        // Dismiss the dialog
+        mProgressDialog.dismiss();
 
         // ViewPager
         mEventsViewPager = (ViewPager) view.findViewById(R.id.events_pager);

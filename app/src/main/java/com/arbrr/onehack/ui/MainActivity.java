@@ -19,6 +19,8 @@ import com.arbrr.onehack.ui.announcements.AnnouncementsFragment;
 import com.arbrr.onehack.ui.awards.AwardsFragment;
 import com.arbrr.onehack.ui.events.EventsFragment;
 import com.arbrr.onehack.ui.contacts.ContactsFragment;
+import com.arbrr.onehack.ui.welcome.LoginFragment;
+import com.arbrr.onehack.ui.welcome.SignupFragment;
 
 /**
  * Created by Omkar Moghe on 5/27/15
@@ -30,6 +32,8 @@ public class MainActivity extends ActionBarActivity {
     private EventsFragment        eventsFragment;
     private ContactsFragment      contactsFragment;
     private AwardsFragment        awardsFragment;
+    private LoginFragment         loginFragment;
+    private SignupFragment        signupFragment;
 
     // Toolbar
     private Toolbar mToolbar;
@@ -55,9 +59,12 @@ public class MainActivity extends ActionBarActivity {
         eventsFragment = new EventsFragment();
         contactsFragment = new ContactsFragment();
         awardsFragment = new AwardsFragment();
+        loginFragment = new LoginFragment();
+        signupFragment = new SignupFragment();
 
-        // Inflate AnnouncementsFragment
-        updateFragment(announcementsFragment, announcementsFragment.TITLE);
+        // Inflate LoginFragment
+        updateFragment(loginFragment, LoginFragment.TITLE);
+        setTitle(LoginFragment.TITLE);
 
         // Navigation Drawer set up
         mNavTitles = getResources().getStringArray(R.array.nav_titles);

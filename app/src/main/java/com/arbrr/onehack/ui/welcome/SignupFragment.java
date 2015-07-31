@@ -1,5 +1,6 @@
 package com.arbrr.onehack.ui.welcome;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,9 +22,14 @@ import com.arbrr.onehack.ui.MainActivity;
  * Created by Nilay on 7/9/15.
  */
 public class SignupFragment extends Fragment {
-    private static final String tag = "Signup";
 
-    public SignupFragment(){
+    private static final String TAG = "Signup";
+    public static final String TITLE = "Sign Up";
+
+    // progress bar
+    private ProgressDialog mProgressDialog;
+
+    public SignupFragment() {
         //required empty public constructor
     }
 
@@ -37,9 +43,9 @@ public class SignupFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_signup, container, false);
-        ((MainActivity)getActivity()).getSupportActionBar().setTitle(R.string.signup);
-        ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        ((MainActivity)getActivity()).getSupportActionBar().setHomeButtonEnabled(false);
+        ((MainActivity) getActivity()).getSupportActionBar().setTitle(R.string.signup);
+        ((MainActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        ((MainActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(false);
 
         final NetworkManager networkManager = NetworkManager.getInstance();
 
@@ -53,6 +59,9 @@ public class SignupFragment extends Fragment {
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // show loading dialog
+                showProgressDialog(emailField.getText().toString(), "OneHack is signing you up.");
+
                 //close keyboard if open already
                 InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(
                         Context.INPUT_METHOD_SERVICE);
@@ -65,12 +74,16 @@ public class SignupFragment extends Fragment {
                         lastNameField.getText().toString(), companyNameField.getText().toString(), new OneHackCallback<User>() {
                             @Override
                             public void success(User response) {
-                                Log.d(tag, "Successfully created new user");
+                                Log.d(TAG, "Successfully created new user");
+
+                                mProgressDialog.dismiss();
                             }
 
                             @Override
                             public void failure(Throwable error) {
-                                Log.d(tag, "Couldn't create new user");
+                                Log.d(TAG, "Couldn't create new user");
+
+                                mProgressDialog.dismiss();
                             }
                         });
             }
@@ -92,5 +105,12 @@ public class SignupFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private void showProgressDialog (String title, String message) {
+        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setTitle(title);
+        mProgressDialog.setMessage(message);
+        mProgressDialog.show();
     }
 }
