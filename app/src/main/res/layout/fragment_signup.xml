@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:hint="@string/signup_first_name"
+        android:ems="10"
+        android:id="@+id/signup_firstname_field" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:hint="@string/signup_last_name"
+        android:ems="10"
+        android:id="@+id/signup_lastname_field" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/signup_company_name"
+        android:id="@+id/signup_companyname_field" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/email"
+        android:inputType="textEmailAddress"
+        android:ems="10"
+        android:id="@+id/signup_email_field" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/signup_password_field" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/signup"
+            android:id="@+id/signup_button"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight=".5" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel_text"
+            android:id="@+id/signup_cancel_button"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight=".5"
+            android:backgroundTint="@color/dev_red" />
+
+
+    </LinearLayout>
+</LinearLayout>
