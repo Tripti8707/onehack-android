@@ -34,8 +34,7 @@ public class DayFragment extends Fragment implements View.OnClickListener,
     private int mStart, mEnd;
     private ArrayList<Event> mEvents; // local copy of events within [mStart, mEnd)
 
-    public DayFragment() {
-    }
+    public DayFragment () {}
 
     public static DayFragment newInstance(int start, int end) {
         DayFragment f = new DayFragment();
@@ -96,7 +95,8 @@ public class DayFragment extends Fragment implements View.OnClickListener,
                                } else Toast.makeText(getActivity(), "No location data for this event.", Toast.LENGTH_SHORT).show();
                                break;
                            case 1:
-                               // TODO: edit event
+                               EventsFragment f = (EventsFragment) getActivity().getSupportFragmentManager().findFragmentByTag("current_main_fragment");
+                               if (f != null ) f.editEvent(event);
                                break;
                            case 2:
                                AlertDialog.Builder builder2 = new AlertDialog.Builder(getActivity());
@@ -104,7 +104,8 @@ public class DayFragment extends Fragment implements View.OnClickListener,
                                        .setMessage(R.string.confirmation_dialog_info)
                                       .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                                           public void onClick(DialogInterface dialog, int id) {
-                                              // TODO: delete event
+                                              EventsFragment f = (EventsFragment) getActivity().getSupportFragmentManager().findFragmentByTag("current_main_fragment");
+                                              if (f != null ) f.deleteEvent(event);
                                           }
                                       })
                                       .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

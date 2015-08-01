@@ -3,17 +3,20 @@ package com.arbrr.onehack.ui.events;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.arbrr.onehack.R;
 import com.arbrr.onehack.data.model.Event;
 import com.arbrr.onehack.data.model.Location;
-import com.arbrr.onehack.data.model.User;
+import com.arbrr.onehack.data.network.GenericResponse;
 import com.arbrr.onehack.data.network.NetworkManager;
 import com.arbrr.onehack.data.network.OneHackCallback;
 
@@ -23,12 +26,14 @@ import java.util.List;
 /**
  * Created by Omkar Moghe on 5/27/15
  */
-public class EventsFragment extends Fragment {
+public class EventsFragment extends Fragment implements DayFragment.EventActionListener {
 
     public static final String TITLE = "Events";
     public static final String TAG   = "EventsFragment";
 
     private NetworkManager networkManager;
+
+    // main frame layout
 
     // ViewPager stuff
     ViewPager mEventsViewPager;
@@ -115,5 +120,46 @@ public class EventsFragment extends Fragment {
         mProgressDialog.setTitle(title);
         mProgressDialog.setMessage(message);
         mProgressDialog.show();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////// INTERFACES, OVERRIDES, ETC. ///////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    @Override
+    public boolean editEvent (Event event) {
+        Log.d(TAG, "edit " + event.getName());
+
+        EditEventFragment fragment = EditEventFragment.newInstance(event);
+
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.main_fragment_container, fragment);
+        fragmentTransaction.addToBackStack("Edit Event"); // for back button navigation
+        fragmentTransaction.commit();
+        return false;
+    }
+
+    @Override
+    public boolean deleteEvent (final Event event) {
+        showProgressDialog("Deleting " + event.getName(), "Say your goodbyes.");
+
+        Log.d(TAG, "delete " + event.getName());
+
+        networkManager.deleteEvent(event, new OneHackCallback<GenericResponse>() {
+            @Override
+            public void success(GenericResponse response) {
+                Toast.makeText(getActivity(), event.getName() + " deleted.", Toast.LENGTH_SHORT).show();
+                mProgressDialog.dismiss();
+            }
+
+            @Override
+            public void failure(Throwable error) {
+                Toast.makeText(getActivity(), error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                mProgressDialog.dismiss();
+            }
+        });
+
+        return false;
     }
 }

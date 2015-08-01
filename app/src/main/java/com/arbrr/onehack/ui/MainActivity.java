@@ -134,7 +134,7 @@ public class MainActivity extends ActionBarActivity {
     private void updateFragment(Fragment fragment, String title) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.main_fragment_container, fragment);
+        fragmentTransaction.replace(R.id.main_fragment_container, fragment, "current_main_fragment");
         fragmentTransaction.addToBackStack(title); // for back button navigation
         fragmentTransaction.commit();
     }
