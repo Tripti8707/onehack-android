@@ -5,6 +5,9 @@
     android:background="@color/white"
     tools:context="com.arbrr.onehack.ui.events.EditEventFragment">
 
+    <!-- Toolbar shadow because fuck you elevation and tab strips -->
+    <include layout="@layout/toolbar_shadow"/>
+
     <LinearLayout android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"

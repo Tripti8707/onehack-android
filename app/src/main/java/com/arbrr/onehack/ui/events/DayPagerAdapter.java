@@ -1,8 +1,10 @@
 package com.arbrr.onehack.ui.events;
 
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.util.Log;
 
 import com.arbrr.onehack.data.model.Event;
 
@@ -14,6 +16,7 @@ import java.util.Locale;
  * Created by Omkar Moghe on 7/12/2015.
  */
 public class DayPagerAdapter extends FragmentStatePagerAdapter {
+    public static final String TAG = "DayPagerAdapter";
 
     public DayPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -29,7 +32,10 @@ public class DayPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        if (EventsManager.buildIndexes() != null) return EventsManager.buildIndexes().size();
+        if (EventsManager.buildIndexes() != null) {
+            Log.d(TAG, "Number of pages: " + EventsManager.buildIndexes().size());
+            return EventsManager.buildIndexes().size();
+        }
         else return 0;
     }
 
@@ -52,6 +58,12 @@ public class DayPagerAdapter extends FragmentStatePagerAdapter {
             }
         }
 
+        Log.d(TAG, position + pageTitle);
         return pageTitle;
+    }
+
+    @Override
+    public Parcelable saveState() {
+        return null;
     }
 }

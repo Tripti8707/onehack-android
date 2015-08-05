@@ -10,6 +10,9 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -26,6 +29,7 @@ import com.arbrr.onehack.data.model.Event;
 import com.arbrr.onehack.data.model.Location;
 import com.arbrr.onehack.data.network.NetworkManager;
 import com.arbrr.onehack.data.network.OneHackCallback;
+import com.arbrr.onehack.ui.MainActivity;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -44,7 +48,7 @@ public class EditEventFragment extends Fragment implements AdapterView.OnItemSel
 
     // Event fields
     private String name, info;
-    private Date startTime, endTime;
+    public Date startTime, endTime;
     private int role, hackathon_id, location_id, id;
 
     // Views
@@ -57,13 +61,20 @@ public class EditEventFragment extends Fragment implements AdapterView.OnItemSel
     private ArrayList<String> locationNamesList;
 
     // other shit
-    private boolean newEvent = false;
+    public boolean newEvent = false;
     private int datePicker = 0; // 0 for start, 1 for end
     private int timePicker = 0; // 0 for start, 1 for end
 
     // Calendars
     private Calendar startTimeC = Calendar.getInstance();
     private Calendar endTimeC = Calendar.getInstance();
+
+    // Pickers
+    private DatePickerFragment sd, ed;
+    private TimePickerFragment st, et;
+
+    // Interface callback listeners
+    OnEventUpdatedListener mListener;
 
     public static EditEventFragment newInstance(Event event) {
         EditEventFragment f = new EditEventFragment();
@@ -100,6 +111,9 @@ public class EditEventFragment extends Fragment implements AdapterView.OnItemSel
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setHasOptionsMenu(true);
+
         Bundle args = getArguments();
 
         if (!args.getBoolean("new")) {
@@ -125,6 +139,12 @@ public class EditEventFragment extends Fragment implements AdapterView.OnItemSel
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_edit_event, container, false);
 
+        // Set title
+        if (((MainActivity) getActivity()).getSupportActionBar() != null) {
+            if (newEvent) ((MainActivity) getActivity()).getSupportActionBar().setTitle("New event");
+            else ((MainActivity) getActivity()).getSupportActionBar().setTitle("Edit event");
+        }
+
         // Views
         editName = (EditText) view.findViewById(R.id.edit_event_name);
         editInfo = (EditText) view.findViewById(R.id.edit_event_info);
@@ -141,14 +161,28 @@ public class EditEventFragment extends Fragment implements AdapterView.OnItemSel
         editLocation.setOnItemSelectedListener(this);
 
         // Date/time buttons
-        Calendar today = Calendar.getInstance();
-        String date = today.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US) + " " + today.get(Calendar.DATE) + ", " + today.get(Calendar.YEAR);
-        String time = today.get(Calendar.HOUR) + ":00";
-        editStartDate.setText(date);
-        editEndDate.setText(date);
-        editStartTime.setText(time);
-        editEndTime.setText(time);
+        Calendar start = Calendar.getInstance();
+        Calendar end = Calendar.getInstance();
+        if (!newEvent) {
+            start.setTime(startTime);
+            end.setTime(endTime);
+        }
+        // Button text
+        String startDateText = start.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US) + " " + start.get(
+                Calendar.DATE) + ", " + start.get(Calendar.YEAR);
+        String startTimeMinutes = (start.get(Calendar.MINUTE) == 0) ? "00" : Integer.toString(start.get(Calendar.MINUTE));
+        String startTimeText = start.get(Calendar.HOUR) + ":" + startTimeMinutes;
+        String endDateText = end.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US) + " " + end.get(
+                Calendar.DATE) + ", " + end.get(Calendar.YEAR);
+        String endTimeMinutes = (end.get(Calendar.MINUTE) == 0) ? "00" : Integer.toString(end.get(
+                Calendar.MINUTE));
+        String endTimeText = end.get(Calendar.HOUR) + ":" + endTimeMinutes;
+        editStartDate.setText(startDateText);
+        editEndDate.setText(endDateText);
+        editStartTime.setText(startTimeText);
+        editEndTime.setText(endTimeText);
 
+        // Button on click listener
         editStartDate.setOnClickListener(this);
         editStartTime.setOnClickListener(this);
         editEndDate.setOnClickListener(this);
@@ -160,7 +194,37 @@ public class EditEventFragment extends Fragment implements AdapterView.OnItemSel
             editInfo.setText(this.info);
         }
 
+        // Pickers
+        sd = new DatePickerFragment();
+        sd.setListener(this);
+        sd.setData(newEvent, this.startTime);
+        st = new TimePickerFragment();
+        st.setListener(this);
+        st.setData(newEvent, startTime);
+        ed = new DatePickerFragment();
+        ed.setListener(this);
+        ed.setData(newEvent, endTime);
+        et = new TimePickerFragment();
+        et.setListener(this);
+        et.setData(newEvent, endTime);
+
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu (Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_edit_event, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.save_event:
+                saveEvent(newEvent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private void saveEvent (boolean newEvent) {
@@ -188,7 +252,7 @@ public class EditEventFragment extends Fragment implements AdapterView.OnItemSel
             mNetworkManager.createEvent(e, new OneHackCallback<Event>() {
                 @Override
                 public void success(Event response) {
-                    // TODO: refresh the day page adapter
+                    mListener.OnEventUpdated(response);
                 }
 
                 @Override
@@ -200,7 +264,7 @@ public class EditEventFragment extends Fragment implements AdapterView.OnItemSel
             mNetworkManager.updateEvent(e, new OneHackCallback<Event>() {
                 @Override
                 public void success(Event response) {
-                    // TODO: refresh the day page adapter
+                    mListener.OnEventUpdated(response);
                 }
 
                 @Override
@@ -256,39 +320,42 @@ public class EditEventFragment extends Fragment implements AdapterView.OnItemSel
         switch (v.getId()) {
             case R.id.edit_event_startDate:
                 datePicker = 0;
-                DatePickerFragment sd = new DatePickerFragment();
-                sd.setListener(this);
                 sd.show(getActivity().getSupportFragmentManager(), "start date picker");
                 break;
             case R.id.edit_event_startTime:
                 timePicker = 0;
-                TimePickerFragment st = new TimePickerFragment();
-                st.setListener(this);
                 st.show(getActivity().getSupportFragmentManager(), "start time picker");
                 break;
             case R.id.edit_event_endDate:
                 datePicker = 1;
-                DatePickerFragment ed = new DatePickerFragment();
-                ed.setListener(this);
                 ed.show(getActivity().getSupportFragmentManager(), "end date picker");
                 break;
             case R.id.edit_event_endTime:
                 timePicker = 1;
-                TimePickerFragment et = new TimePickerFragment();
-                et.setListener(this);
                 et.show(getActivity().getSupportFragmentManager(), "end time picker");
                 break;
         }
     }
 
+    public void setOnEventUpdatedListener (OnEventUpdatedListener listener) {
+        this.mListener = listener;
+    }
+
+    ///////////////////
+    // PICKER FRAGMENTS
+    ///////////////////
+
     public static class DatePickerFragment extends DialogFragment {
         private EditEventFragment listener;
+        private boolean newEvent;
+        private Date defaultDate;
 
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Use the current date as the default date in the picker
             final Calendar c = Calendar.getInstance();
+            if (!newEvent) c.setTime(defaultDate);
             int year = c.get(Calendar.YEAR);
             int month = c.get(Calendar.MONTH);
             int day = c.get(Calendar.DAY_OF_MONTH);
@@ -301,16 +368,24 @@ public class EditEventFragment extends Fragment implements AdapterView.OnItemSel
             this.listener = e;
         }
 
+        public void setData(boolean newEvent, Date defaultDate) {
+            this.newEvent = newEvent;
+            this.defaultDate = defaultDate;
+        }
+
     }
 
     public static class TimePickerFragment extends DialogFragment {
         private EditEventFragment listener;
+        private boolean newEvent;
+        private Date defaultDate;
 
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Use the current time as the default values for the picker
             final Calendar c = Calendar.getInstance();
+            if (!newEvent) c.setTime(defaultDate);
             int hour = c.get(Calendar.HOUR_OF_DAY);
             int minute = c.get(Calendar.MINUTE);
 
@@ -323,5 +398,14 @@ public class EditEventFragment extends Fragment implements AdapterView.OnItemSel
             this.listener = e;
         }
 
+        public void setData(boolean newEvent, Date defaultDate) {
+            this.newEvent = newEvent;
+            this.defaultDate = defaultDate;
+        }
+
+    }
+
+    public interface OnEventUpdatedListener {
+        public void OnEventUpdated (Event event);
     }
 }

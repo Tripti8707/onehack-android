@@ -135,7 +135,7 @@ public class DayFragment extends Fragment implements View.OnClickListener,
     }
 
     public interface EventActionListener {
-        public boolean deleteEvent (Event event);
-        public boolean editEvent (Event event);
+        public void deleteEvent (Event event);
+        public void editEvent (Event event);
     }
 }
