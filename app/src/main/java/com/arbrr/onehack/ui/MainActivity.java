@@ -21,6 +21,10 @@ import com.arbrr.onehack.ui.events.EventsFragment;
 import com.arbrr.onehack.ui.contacts.ContactsFragment;
 import com.arbrr.onehack.ui.welcome.LoginFragment;
 import com.arbrr.onehack.ui.welcome.SignupFragment;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 /**
  * Created by Omkar Moghe on 5/27/15
@@ -63,18 +67,51 @@ public class MainActivity extends ActionBarActivity {
         signupFragment = new SignupFragment();
 
         // Inflate LoginFragment
-        updateFragment(loginFragment, LoginFragment.TITLE);
+        updateFragment(loginFragment);
         setTitle(LoginFragment.TITLE);
 
         // Navigation Drawer set up
-        mNavTitles = getResources().getStringArray(R.array.nav_titles);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mNavDrawerList = (ListView) findViewById(R.id.left_drawer);
-        mNavDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                                                           R.layout.drawer_list_item,
-                                                           R.id.drawer_item_title,
-                                                           mNavTitles));
-        mNavDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        buildNavigationDrawer();
+    }
+
+    private void buildNavigationDrawer() {
+        PrimaryDrawerItem announcements = new PrimaryDrawerItem().withName("Announcements");
+        PrimaryDrawerItem events = new PrimaryDrawerItem().withName("Events");
+        PrimaryDrawerItem contacts = new PrimaryDrawerItem().withName("Contacts");
+        PrimaryDrawerItem awards = new PrimaryDrawerItem().withName("Awards");
+
+
+        final Drawer drawer = new DrawerBuilder()
+                .withActivity(this)
+                .withToolbar(mToolbar)
+                .addDrawerItems(announcements, events, contacts, awards)
+                .build();
+
+        drawer.setOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+            @Override
+            public boolean onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
+                // switch 'i' aka position of item
+                switch (i) {
+                    case 0:
+                        updateFragment(announcementsFragment);
+                        break;
+                    case 1:
+                        updateFragment(eventsFragment);
+                        break;
+                    case 2:
+                        updateFragment(contactsFragment);
+                        break;
+                    case 3:
+                        updateFragment(awardsFragment);
+                        break;
+                    default:
+                        return false;
+                }
+
+                drawer.closeDrawer();
+                return true;
+            }
+        });
     }
 
     @Override
@@ -100,42 +137,13 @@ public class MainActivity extends ActionBarActivity {
     }
 
     /**
-     * Determines which fragment should populate the main_fragment_container based on the selected
-     * position.
-     * @param position position of the fragment in the list
-     */
-    private void selectFragment(int position) {
-        switch (position) {
-            case 0:
-                updateFragment(announcementsFragment, mNavTitles[position]);
-                break;
-            case 1:
-                updateFragment(eventsFragment, mNavTitles[position]);
-                break;
-            case 2:
-                updateFragment(contactsFragment, mNavTitles[position]);
-                break;
-            case 3:
-                updateFragment(awardsFragment, mNavTitles[position]);
-                break;
-        }
-
-        // Update and/or close navigation drawer
-        // TODO: find a better place for this?
-        mNavDrawerList.setItemChecked(position, true);
-        setTitle(mNavTitles[position]);
-        mDrawerLayout.closeDrawer(mNavDrawerList);
-    }
-
-    /**
      * Updates the main_fragment_container with the given fragment.
      * @param fragment fragment to replace the main container with
      */
-    private void updateFragment(Fragment fragment, String title) {
+    private void updateFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.main_fragment_container, fragment);
-        fragmentTransaction.addToBackStack(title); // for back button navigation
         fragmentTransaction.commit();
     }
 
@@ -159,15 +167,6 @@ public class MainActivity extends ActionBarActivity {
             setTitle(title);
         } else {
             super.onBackPressed(); // let the android overlords handle that shit
-        }
-    }
-
-    //////////////////// DrawerItemClickListener ////////////////////
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            selectFragment(position);
         }
     }
 }
