@@ -8,6 +8,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.arbrr.onehack.R;
+import com.arbrr.onehack.data.network.NetworkManager;
 import com.arbrr.onehack.ui.announcements.AnnouncementsFragment;
 import com.arbrr.onehack.ui.awards.AwardsFragment;
 import com.arbrr.onehack.ui.events.EventsFragment;
@@ -24,13 +26,20 @@ import com.arbrr.onehack.ui.welcome.LoginFragment;
 import com.arbrr.onehack.ui.welcome.SignupFragment;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
+import com.mikepenz.materialdrawer.accountswitcher.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 /**
  * Created by Omkar Moghe on 5/27/15
  */
 public class MainActivity extends AppCompatActivity {
+    public static final String TAG = "MainActivity";
 
     // Fragments
     private AnnouncementsFragment announcementsFragment;
@@ -44,9 +53,10 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar mToolbar;
 
     // Navigation Drawer
-    private String[]     mNavTitles;
-    private DrawerLayout mDrawerLayout;
-    private ListView     mNavDrawerList;
+    private Drawer mDrawer;
+
+    // Network Manager
+    private NetworkManager mNetworkManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +68,9 @@ public class MainActivity extends AppCompatActivity {
         if (mToolbar != null) {
             setSupportActionBar(mToolbar);
         }
+
+        // Network Manager
+        mNetworkManager = NetworkManager.getInstance();
 
         // Instantiate fragments
         announcementsFragment = new AnnouncementsFragment();
@@ -76,21 +89,56 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void buildNavigationDrawer() {
-        PrimaryDrawerItem announcements = new PrimaryDrawerItem().withName("Announcements");
-        PrimaryDrawerItem events = new PrimaryDrawerItem().withName("Events");
-        PrimaryDrawerItem contacts = new PrimaryDrawerItem().withName("Contacts");
-        PrimaryDrawerItem awards = new PrimaryDrawerItem().withName("Awards");
+        // Drawer items
+        PrimaryDrawerItem announcements = new PrimaryDrawerItem().withName("Announcements")
+                                                                 .withIcon(R.drawable.ic_announcement);
+        PrimaryDrawerItem events = new PrimaryDrawerItem().withName("Events")
+                                                          .withIcon(R.drawable.ic_event);
+        PrimaryDrawerItem contacts = new PrimaryDrawerItem().withName("Contacts")
+                                                            .withIcon(R.drawable.ic_contact);
+        PrimaryDrawerItem awards = new PrimaryDrawerItem().withName("Awards")
+                                                          .withIcon(R.drawable.ic_award);
+        SecondaryDrawerItem settings = new SecondaryDrawerItem().withName("Settings")
+                                                                .withIcon(R.drawable.ic_settings);
 
+        // Account Hackathons
+        ProfileDrawerItem mhacks = new ProfileDrawerItem().withName("MHacks 6")
+                                                          .withIcon("http://mhacks.org/images/mhacks_logo.svg")
+                                                          .withTextColorRes(R.color.primary_text);
+        mhacks.setTextColor(R.color.primary_text);
+        mhacks.setSelectedColorRes(R.color.primary_dark);
 
-        final Drawer drawer = new DrawerBuilder()
+        AccountHeader accountHeader = new AccountHeaderBuilder()
                 .withActivity(this)
-                .withToolbar(mToolbar)
-                .addDrawerItems(announcements, events, contacts, awards)
+                .addProfiles(mhacks)
+                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
+                    @Override
+                    public boolean onProfileChanged(View view,
+                                                    IProfile profile,
+                                                    boolean currentProfile) {
+                        return true;
+                    }
+                })
                 .build();
 
-        drawer.setOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+        mDrawer = new DrawerBuilder()
+                .withActivity(this)
+                .withToolbar(mToolbar)
+                .withAccountHeader(accountHeader)
+                .addDrawerItems(announcements, events, contacts, awards,
+                                new DividerDrawerItem(),
+                                settings)
+                .build();
+
+        mDrawer.setOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
             @Override
-            public boolean onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
+            public boolean onItemClick(AdapterView<?> adapterView,
+                                       View view,
+                                       int i,
+                                       long l,
+                                       IDrawerItem iDrawerItem) {
+                Log.d(TAG, "nav position: " + i);
+
                 // switch 'i' aka position of item
                 switch (i) {
                     case 0:
@@ -109,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                         return false;
                 }
 
-                drawer.closeDrawer();
+                mDrawer.closeDrawer();
                 return true;
             }
         });
@@ -145,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.main_fragment_container, fragment);
+        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 
@@ -159,13 +208,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(mDrawerLayout.isDrawerOpen(mNavDrawerList)) {
-            mDrawerLayout.closeDrawer(mNavDrawerList); // close nav drawer if open
+        if(mDrawer.isDrawerOpen()) {
+            mDrawer.closeDrawer(); // close nav drawer if open
         } else if(getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            String title = getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1)
-                                                      .getName();
             getSupportFragmentManager().popBackStack(); // otherwise pop fragment back stack
-            setTitle(title);
         } else {
             super.onBackPressed(); // let the android overlords handle that shit
         }

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -144,7 +145,7 @@ public class ContactsFragment extends Fragment implements BackpressListener {
     protected void handleMenuSearchClick(){
         // ORIGINAL: https://bytedebugger.wordpress.com/2015/03/30/tutorial-android-actionbar-with-material-design-and-search-field/
 
-        ActionBar action = ((ActionBarActivity) getActivity()).getSupportActionBar(); //get the actionbar
+        ActionBar action = ((AppCompatActivity) getActivity()).getSupportActionBar(); //get the actionbar
 
         if(mIsSearchOpened){ //test if the search is open
 
