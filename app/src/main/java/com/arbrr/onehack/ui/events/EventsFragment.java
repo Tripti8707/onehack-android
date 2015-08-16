@@ -3,19 +3,24 @@ package com.arbrr.onehack.ui.events;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.arbrr.onehack.R;
 import com.arbrr.onehack.data.model.Event;
 import com.arbrr.onehack.data.model.Location;
-import com.arbrr.onehack.data.model.User;
+import com.arbrr.onehack.data.network.GenericResponse;
 import com.arbrr.onehack.data.network.NetworkManager;
 import com.arbrr.onehack.data.network.OneHackCallback;
+import com.arbrr.onehack.ui.MainActivity;
+import com.getbase.floatingactionbutton.AddFloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,12 +28,15 @@ import java.util.List;
 /**
  * Created by Omkar Moghe on 5/27/15
  */
-public class EventsFragment extends Fragment {
+public class EventsFragment extends Fragment implements DayFragment.EventActionListener,
+                                                        EditEventFragment.OnEventUpdatedListener {
 
     public static final String TITLE = "Events";
     public static final String TAG   = "EventsFragment";
 
     private NetworkManager networkManager;
+
+    // main frame layout
 
     // ViewPager stuff
     ViewPager mEventsViewPager;
@@ -54,6 +62,11 @@ public class EventsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_events, container, false);
 
+        // Set title
+        if (((MainActivity) getActivity()).getSupportActionBar() != null) {
+            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Events");
+        }
+
         showProgressDialog("Loading", "Magical gnomes are fetching the latest schedule...");
 
         // Log in
@@ -71,6 +84,15 @@ public class EventsFragment extends Fragment {
         mDayPagerAdapter = new DayPagerAdapter(getFragmentManager());
         mEventsViewPager.setAdapter(mDayPagerAdapter);
         mDayPagerTabStrip = (PagerTabStrip) view.findViewById(R.id.day_pager_tab_strip);
+
+        // FAB
+        AddFloatingActionButton newEventFAB = (AddFloatingActionButton) view.findViewById(R.id.new_event_fab);
+        newEventFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                newEvent();
+            }
+        });
 
         return view;
     }
@@ -115,5 +137,59 @@ public class EventsFragment extends Fragment {
         mProgressDialog.setTitle(title);
         mProgressDialog.setMessage(message);
         mProgressDialog.show();
+    }
+
+    private void newEvent () {
+        EditEventFragment fragment = EditEventFragment.newInstance();
+        fragment.setOnEventUpdatedListener(this);
+
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.main_fragment_container, fragment);
+        fragmentTransaction.addToBackStack("New Event"); // for back button navigation
+        fragmentTransaction.commit();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////// INTERFACES, OVERRIDES, ETC. ///////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    @Override
+    public void editEvent (Event event) {
+        EditEventFragment fragment = EditEventFragment.newInstance(event);
+        fragment.setOnEventUpdatedListener(this);
+
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.main_fragment_container, fragment);
+        fragmentTransaction.addToBackStack("Edit Event"); // for back button navigation
+        fragmentTransaction.commit();
+    }
+
+    @Override
+    public void deleteEvent (final Event event) {
+        showProgressDialog("Deleting " + event.getName(), "Say your goodbyes.");
+
+        Log.d(TAG, "delete " + event.getName());
+
+        networkManager.deleteEvent(event, new OneHackCallback<GenericResponse>() {
+            @Override
+            public void success(GenericResponse response) {
+                Toast.makeText(getActivity(), event.getName() + " deleted.", Toast.LENGTH_SHORT).show();
+                mProgressDialog.dismiss();
+            }
+
+            @Override
+            public void failure(Throwable error) {
+                Toast.makeText(getActivity(), error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                mProgressDialog.dismiss();
+            }
+        });
+    }
+
+    @Override
+    public void OnEventUpdated(Event event) {
+        getLocations();
+        getEvents();
     }
 }
