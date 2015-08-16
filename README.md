@@ -19,5 +19,5 @@ If you plan on building this project for release, you'll need to add a `signingC
 Special thanks to the developers & maintainers of the following:
 - [OkHttp](http://square.github.io/okhttp/)
 - [Retrofit](http://square.github.io/retrofit/)
-- [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer)
+- [MaterialDrawer](http://mikepenz.github.io/MaterialDrawer/)
 - [FloatingActionButton](https://github.com/futuresimple/android-floating-action-button)
