@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -28,6 +30,7 @@ import com.arbrr.onehack.data.network.OneHackCallback;
 import com.arbrr.onehack.ui.other.BackpressListener;
 import com.arbrr.onehack.ui.other.SearchEditText;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,7 +39,7 @@ import java.util.List;
 public class ContactsFragment extends Fragment implements BackpressListener {
     private static final String LOGTAG = "MD/ContactsFragment";
 
-    List<User> allUsers;
+    ArrayList<User> allUsers;
     NetworkManager mNetworkManager;
 
     // ListView in which to display all the contacts
@@ -89,18 +92,7 @@ public class ContactsFragment extends Fragment implements BackpressListener {
 
         // Test: Getting the Network Manager to give some User info
         mNetworkManager = NetworkManager.getInstance();
-        mNetworkManager.logUserIn("tom_erdmann@mac.com", "test", new OneHackCallback<User>() {
-            @Override
-            public void success(User response) {
-                Log.d(LOGTAG, "Logged in!");
-                getData();
-            }
-
-            @Override
-            public void failure(Throwable error) {
-                Log.d(LOGTAG, "Couldn't log in :(");
-            }
-        });
+        getData();
     }
 
     @Override
@@ -166,6 +158,9 @@ public class ContactsFragment extends Fragment implements BackpressListener {
             //add the search icon in the action bar
             mSearchAction.setIcon(getResources().getDrawable(R.drawable.ic_search));
 
+            // Clear out any possible previous searches/filters by simply doing an empty search
+            searchUsers("");
+
             mIsSearchOpened = false;
         } else { //open the search entry
 
@@ -182,7 +177,7 @@ public class ContactsFragment extends Fragment implements BackpressListener {
                 @Override
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                     if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                        doSearch();
+                        searchUsers(v.getText());
                         return true;
                     }
                     return false;
@@ -203,10 +198,12 @@ public class ContactsFragment extends Fragment implements BackpressListener {
     }
 
     /**
-     * Handles a search request
+     * Search through the full list of users and filter the list of users
+     * @param searchConstraint The string to filter down the list of users (by name or company)
      */
-    private void doSearch() {
-        // TODO: Actually search through the darn contacts
+    private void searchUsers(CharSequence searchConstraint) {
+        // Simply let the adapter handle filtering and changing the display of users
+        mContactsListAdapter.getFilter().filter(searchConstraint);
     }
 
     private void getData() {
@@ -219,7 +216,7 @@ public class ContactsFragment extends Fragment implements BackpressListener {
                 Log.d(LOGTAG, "Got all the data, with " + response.size() + " users");
 
                 // Cache all the users internally
-                allUsers = (List<User>) response;
+                allUsers = (ArrayList<User>) response;
 
                 // Set up the ListView to display all the contacts, now that data is here
                 initContactsList();
@@ -244,26 +241,35 @@ public class ContactsFragment extends Fragment implements BackpressListener {
         mContactsListView.setAdapter(mContactsListAdapter);
     }
 
-    class ContactsListAdapter extends BaseAdapter {
+    class ContactsListAdapter extends BaseAdapter implements Filterable {
         Context mContext;
 
         // List of all the contacts (all the data need to show is here)
-        List<User> mUsers;
+        ArrayList<User> mAllUsersList;
 
-        public ContactsListAdapter(Context context, final List<User> allUsers) {
+        // List of actual users that will be shown
+        ArrayList<User> mShownUsersList;
+
+        // Cached instance of the filter for this adapter
+        ContactFilter mFilter;
+
+        public ContactsListAdapter(Context context, final ArrayList<User> allUsers) {
             // Cache the variables for later use
             mContext = context;
-            mUsers = allUsers;
+            mAllUsersList = allUsers;
+
+            // By default there is no filter, so show all the users
+            mShownUsersList = allUsers;
         }
 
         @Override
         public int getCount() {
-            return mUsers.size();
+            return mShownUsersList.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return mUsers.get(position);
+            return mShownUsersList.get(position);
         }
 
         @Override
@@ -297,7 +303,7 @@ public class ContactsFragment extends Fragment implements BackpressListener {
             }
 
             // Set the current row's data
-            User thisUser = mUsers.get(position);
+            User thisUser = mShownUsersList.get(position);
             holder.name.setText(thisUser.getFirstName() + " " + thisUser.getLastName());
             holder.company.setText(thisUser.getCompany());
 
@@ -305,12 +311,76 @@ public class ContactsFragment extends Fragment implements BackpressListener {
         }
 
         public class ViewHolder{
-
             public TextView name;
             public TextView company;
 
             public ImageView icon;
-
         }
+
+        @Override
+        public Filter getFilter() {
+            // If the fitler hasn't yet been instantiated, create it
+            if(mFilter == null) {
+                mFilter = new ContactFilter();
+            }
+
+            return mFilter;
+        }
+
+        private class ContactFilter extends Filter {
+
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                // Create the results that will ultimately be returned
+                FilterResults results = new FilterResults();
+
+                // If the constraint is actually a valid constraint to compare with...
+                if(constraint != null && constraint.toString().length() > 0) {
+                    // Only check the constraint in its lowercased form, for simplicity
+                    constraint = constraint.toString().toLowerCase();
+
+                    // Initialize the filtered list of users
+                    ArrayList<User> filteredUsers = new ArrayList<User>();
+
+                    // Find all the users in the full list of users that match the constraint
+                    for(User curUser : mAllUsersList) {
+                        // If the current user's name or company matches the filter, than it's good
+                        boolean isFirstNameMatch = curUser.getFirstName().toLowerCase().contains(constraint);
+                        boolean isLastNameMatch = curUser.getLastName().toLowerCase().contains(constraint);
+                        boolean isCompanyMatch = curUser.getCompany().toLowerCase().contains(constraint);
+
+                        if(isFirstNameMatch || isLastNameMatch || isCompanyMatch) {
+                            // Add this valid user to the filtered list
+                            filteredUsers.add(curUser);
+                        }
+
+                        // Update the final results
+                        results.count = filteredUsers.size();
+                        results.values = filteredUsers;
+                    }
+                }
+                // If no valid constraint, then all the users are technically valid
+                else {
+                    synchronized (this) {
+                        // Ultimately, the results contain all the users
+                        results.count = mAllUsersList.size();
+                        results.values = mAllUsersList;
+                    }
+                }
+
+                // Finally, return the results
+                return results;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                // Save the filtered list of users to show
+                mShownUsersList = (ArrayList<User>) results.values;
+
+                notifyDataSetChanged();
+            }
+        }
+
     }
 }
