@@ -91,21 +91,26 @@ public class MainActivity extends AppCompatActivity {
     private void buildNavigationDrawer() {
         // Drawer items
         PrimaryDrawerItem announcements = new PrimaryDrawerItem().withName("Announcements")
-                                                                 .withIcon(R.drawable.ic_announcement);
+                                                                 .withIcon(R.drawable.ic_announcement)
+                                                                 .withSelectedTextColorRes(R.color.primary_dark);
         PrimaryDrawerItem events = new PrimaryDrawerItem().withName("Events")
-                                                          .withIcon(R.drawable.ic_event);
+                                                          .withIcon(R.drawable.ic_event)
+                                                          .withSelectedTextColorRes(R.color.primary_dark);
         PrimaryDrawerItem contacts = new PrimaryDrawerItem().withName("Contacts")
-                                                            .withIcon(R.drawable.ic_contact);
+                                                            .withIcon(R.drawable.ic_contact)
+                                                            .withSelectedTextColorRes(R.color.primary_dark);
         PrimaryDrawerItem awards = new PrimaryDrawerItem().withName("Awards")
-                                                          .withIcon(R.drawable.ic_award);
+                                                          .withIcon(R.drawable.ic_award)
+                                                          .withSelectedTextColorRes(R.color.primary_dark);
         SecondaryDrawerItem settings = new SecondaryDrawerItem().withName("Settings")
-                                                                .withIcon(R.drawable.ic_settings);
+                                                                .withIcon(R.drawable.ic_settings)
+                                                                .withSelectedTextColorRes(R.color.primary_dark);
 
         // Account Hackathons
         ProfileDrawerItem mhacks = new ProfileDrawerItem().withName("MHacks 6")
-                                                          .withIcon("http://mhacks.org/images/mhacks_logo.svg")
+                                                          .withIcon(
+                                                                  "http://mhacks.org/images/mhacks_logo.svg")
                                                           .withTextColorRes(R.color.primary_text);
-        mhacks.setTextColor(R.color.primary_text);
         mhacks.setSelectedColorRes(R.color.primary_dark);
 
         AccountHeader accountHeader = new AccountHeaderBuilder()
@@ -119,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
                         return true;
                     }
                 })
+                .withTextColorRes(R.color.primary_text)
                 .build();
 
         mDrawer = new DrawerBuilder()

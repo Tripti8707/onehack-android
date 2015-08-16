@@ -7,10 +7,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.arbrr.onehack.R;
@@ -47,6 +49,7 @@ public class EventsFragment extends Fragment implements DayFragment.EventActionL
 
     // progress bar
     private ProgressDialog mProgressDialog;
+    private ProgressBar mProgressBar;
 
     public EventsFragment() {
         // Required empty public constructor.
@@ -63,11 +66,12 @@ public class EventsFragment extends Fragment implements DayFragment.EventActionL
         View view = inflater.inflate(R.layout.fragment_events, container, false);
 
         // Set title
-        if (((MainActivity) getActivity()).getSupportActionBar() != null) {
-            ((MainActivity) getActivity()).getSupportActionBar().setTitle("Events");
+        if (((AppCompatActivity) getActivity()).getSupportActionBar() != null) {
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Events");
         }
 
-        showProgressDialog("Loading", "Magical gnomes are fetching the latest schedule...");
+        mProgressBar = (ProgressBar) view.findViewById(R.id.loading_spinner);
+        mProgressBar.setVisibility(View.VISIBLE);
 
         // Log in
         networkManager = NetworkManager.getInstance();
@@ -77,7 +81,7 @@ public class EventsFragment extends Fragment implements DayFragment.EventActionL
         getEvents();
 
         // Dismiss the dialog
-        mProgressDialog.dismiss();
+        mProgressBar.setVisibility(View.GONE);
 
         // ViewPager
         mEventsViewPager = (ViewPager) view.findViewById(R.id.events_pager);
