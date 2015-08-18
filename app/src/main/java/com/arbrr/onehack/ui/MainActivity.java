@@ -88,6 +88,10 @@ public class MainActivity extends AppCompatActivity {
         buildNavigationDrawer();
     }
 
+    /**
+     * Method to build the navigation drawer and set up it's behaviors and styling.
+     * Interface callbacks for the navigation drawer are within this method.
+     */
     private void buildNavigationDrawer() {
         // Drawer items
         PrimaryDrawerItem announcements = new PrimaryDrawerItem().withName("Announcements")
